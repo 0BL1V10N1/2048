@@ -1,0 +1,47 @@
+name: 🙋 Question / Help
+description: Need help or have a question about the app?
+title: "[Question] "
+labels: ["question"]
+assignees:
+  - 0BL1V10N1
+  - Noam790
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're happy to help! Please provide as much context as possible.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: Describe your question or what you need help with.
+      placeholder: I'm not sure how to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Any additional context that might help us answer your question.
+      placeholder: I tried... but...
+    validations:
+      required: false
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+      description: What version of the app are you using?
+      placeholder: e.g. 1.0
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched the existing issues and documentation before asking.
+          required: true
