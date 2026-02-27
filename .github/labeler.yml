@@ -1,0 +1,36 @@
+# Labeler configuration — auto-labels PRs based on changed paths
+# Used by: .github/workflows/labeler.yml
+
+build:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "build.gradle.kts"
+          - "app/build.gradle.kts"
+          - "settings.gradle.kts"
+          - "gradle.properties"
+          - "gradle/**"
+          - "gradlew*"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "config/**"
+          - ".editorconfig"
+          - "**/.gitignore"
+
+app:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "app/src/**"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - "**/*.md"
+          - "LICENSE"
