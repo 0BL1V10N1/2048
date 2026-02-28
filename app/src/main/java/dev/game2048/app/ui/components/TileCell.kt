@@ -25,13 +25,13 @@ fun TileCell(value: Int, modifier: Modifier = Modifier) {
             .background(tileColor(value)),
         contentAlignment = Alignment.Center
     ) {
-        if (value <= 0) return@Box
-
-        Text(
-            text = value.toString(),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = tileTextColor(value)
-        )
+        if (value > 0) {
+            Text(
+                text = value.toString(),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = tileTextColor(value)
+            )
+        }
     }
 }

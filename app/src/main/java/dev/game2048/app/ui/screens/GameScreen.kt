@@ -39,7 +39,8 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewMod
             board = board,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp)
+                .padding(32.dp),
+            onMove = { direction -> viewModel.onMove(direction) }
         )
     }
 }

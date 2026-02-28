@@ -16,8 +16,8 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
 
     fun spawnRandomTile() {
         val emptyCells = buildList {
-            for (row in 0 until size) {
-                for (col in 0 until size) {
+            for (row in 0 until this@GameEngine.size) {
+                for (col in 0 until this@GameEngine.size) {
                     if (grid[row][col] == 0) add(row to col)
                 }
             }
@@ -27,6 +27,11 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
 
         val (row, col) = emptyCells.random()
         grid[row][col] = if (Random.nextFloat() < CHANCE_OF_TWO) 2 else 4
+    }
+
+    fun move(direction: Direction) {
+        // TODO: fusion
+        spawnRandomTile()
     }
 
     private companion object {

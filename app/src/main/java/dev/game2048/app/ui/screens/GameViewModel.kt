@@ -1,6 +1,7 @@
 package dev.game2048.app.ui.screens
 
 import androidx.lifecycle.ViewModel
+import dev.game2048.app.data.Direction
 import dev.game2048.app.data.GameEngine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,6 +16,11 @@ class GameViewModel : ViewModel() {
 
     init {
         engine.startGame()
+        _board.value = engine.board()
+    }
+
+    fun onMove(direction: Direction) {
+        engine.move(direction)
         _board.value = engine.board()
     }
 
