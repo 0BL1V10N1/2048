@@ -20,6 +20,12 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
         repeat(INITIAL_TILES) { spawnRandomTile() }
     }
 
+    fun isGameOver(): Boolean {
+        if (refreshEmptyCells()) return false
+        return computeGrid(Direction.LEFT).contentDeepEquals(grid) &&
+            computeGrid(Direction.UP).contentDeepEquals(grid)
+    }
+
     fun spawnRandomTile() {
         if (emptyCells.isEmpty()) return
 
@@ -37,12 +43,6 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
         }
 
         return hasChanged
-    }
-
-    fun isGameOver(): Boolean {
-        if (refreshEmptyCells()) return false
-        return computeGrid(Direction.LEFT).contentDeepEquals(grid) &&
-            computeGrid(Direction.UP).contentDeepEquals(grid)
     }
 
     private fun computeGrid(direction: Direction): Array<IntArray> {
