@@ -45,7 +45,7 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
             spawnRandomTile()
         }
 
-        return hasChanged
+        return !hasChanged
     }
 
     private fun fillZ(row: List<Int>) = (row + List(size - row.size) { 0 })
