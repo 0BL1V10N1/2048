@@ -30,7 +30,7 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
         grid[row][col] = if (Random.nextFloat() < CHANCE_OF_TWO) 2 else 4
     }
 
-    fun move(direction: Direction) {
+    fun move(direction: Direction): Boolean {
         val newGrid = when (direction) {
             Direction.UP -> moveUp()
             Direction.DOWN -> moveDown()
@@ -39,10 +39,13 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
         }
 
         // if the grid has changed, update it and spawn a new tile
-        if (!newGrid.contentDeepEquals(grid)) {
+        val hasChanged: Boolean = newGrid.contentDeepEquals(grid)
+        if (!hasChanged) {
             grid = newGrid
             spawnRandomTile()
         }
+
+        return hasChanged
     }
 
     private fun fillZ(row: List<Int>) = (row + List(size - row.size) { 0 })

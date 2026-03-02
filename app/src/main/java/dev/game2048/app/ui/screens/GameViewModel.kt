@@ -20,8 +20,9 @@ class GameViewModel : ViewModel() {
     }
 
     fun onMove(direction: Direction) {
-        engine.move(direction)
-        _board.value = engine.board()
+        if (engine.move(direction)) {
+            _board.value = engine.board()
+        }
     }
 
     private companion object {
