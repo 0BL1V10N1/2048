@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.sp
 import dev.game2048.app.ui.theme.tileColor
 import dev.game2048.app.ui.theme.tileTextColor
 
-@Suppress("FunctionNaming")
 @Composable
 fun TileCell(value: Int, modifier: Modifier = Modifier) {
     Box(

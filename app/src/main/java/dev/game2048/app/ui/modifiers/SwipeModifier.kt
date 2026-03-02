@@ -3,7 +3,7 @@ package dev.game2048.app.ui.modifiers
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import dev.game2048.app.data.Direction
+import dev.game2048.app.data.models.Direction
 import kotlin.math.abs
 
 fun Modifier.onSwipe(threshold: Float = 100f, onSwipeDetected: (Direction) -> Unit): Modifier =

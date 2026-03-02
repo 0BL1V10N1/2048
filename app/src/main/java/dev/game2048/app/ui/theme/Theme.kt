@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 
 private val LightColorScheme = lightColorScheme()
 
-@Suppress("FunctionNaming")
 @Composable
 fun Game2048Theme(content: @Composable () -> Unit) {
     MaterialTheme(

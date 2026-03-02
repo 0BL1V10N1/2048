@@ -12,11 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import dev.game2048.app.data.Direction
+import dev.game2048.app.data.models.Direction
 import dev.game2048.app.ui.modifiers.onSwipe
 import dev.game2048.app.ui.theme.GridBackground
 
-@Suppress("FunctionNaming")
 @Composable
 fun GameGrid(board: List<List<Int>>, modifier: Modifier = Modifier, onMove: (Direction) -> Unit) {
     Column(
