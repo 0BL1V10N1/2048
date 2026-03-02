@@ -15,6 +15,9 @@ class GameViewModel : ViewModel() {
     private val engine = GameEngine(GRID_SIZE)
     private var isMoving = false
 
+    private val _isGameOver = MutableStateFlow(false)
+    val isGameOver: StateFlow<Boolean> = _isGameOver.asStateFlow()
+
     private val _board = MutableStateFlow(emptyBoard())
     val board: StateFlow<List<List<Int>>> = _board.asStateFlow()
 
@@ -24,7 +27,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun onMove(direction: Direction) {
-        if (isMoving) {
+        if (isMoving || _isGameOver.value) {
             return
         }
 
@@ -34,8 +37,13 @@ class GameViewModel : ViewModel() {
             if (engine.move(direction)) {
                 _board.value = engine.board()
                 delay(80)
+
                 engine.spawnRandomTile()
                 _board.value = engine.board()
+
+                if (engine.isGameOver()) {
+                    _isGameOver.value = true
+                }
             }
             isMoving = false
         }

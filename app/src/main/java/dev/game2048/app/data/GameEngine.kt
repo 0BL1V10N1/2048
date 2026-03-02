@@ -33,13 +33,18 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
         grid[row][col] = if (Random.nextFloat() < CHANCE_OF_TWO) 2 else 4
     }
 
-    private fun updateEmptyCells() {
+    private fun updateEmptyCells(): Boolean {
         emptyCells.clear()
+        var empty = 0
         for (r in 0 until size) {
             for (c in 0 until size) {
-                if (grid[r][c] == 0) emptyCells.add(r to c)
+                if (grid[r][c] == 0) {
+                    emptyCells.add(r to c)
+                    empty++
+                }
             }
         }
+        return empty != 0
     }
 
     fun move(direction: Direction): Boolean {
@@ -55,7 +60,6 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
         if (hasChanged) {
             grid = newGrid
             updateEmptyCells()
-            spawnRandomTile()
         }
 
         return hasChanged
@@ -113,6 +117,18 @@ class GameEngine(private val size: Int = DEFAULT_SIZE) {
             fillZ(mergeRow(row.filter { it != 0 }.reversed())).reversed().toIntArray()
         }.toTypedArray()
         return transpose(moved)
+    }
+
+    // Detect a game over if the cells are all Tiles + horizontal/vertical merge is impossible
+    fun isGameOver(): Boolean {
+        if (updateEmptyCells()) {
+            return false
+        }
+
+        val canMoveHorizontal = !moveLeft().contentDeepEquals(grid)
+        val canMoveVertical = !moveUp().contentDeepEquals(grid)
+
+        return !canMoveVertical && !canMoveHorizontal
     }
 
     private fun logBoard(grid: Array<IntArray>) {
