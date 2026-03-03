@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.game2048.app.domain.models.GameState
+import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.ui.theme.Game2048Theme
 import dev.game2048.app.ui.theme.GameTitle
 import dev.game2048.app.ui.theme.TextLight

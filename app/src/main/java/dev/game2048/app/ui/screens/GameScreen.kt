@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.game2048.app.domain.models.GameState
+import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.ui.components.GameGrid
 import dev.game2048.app.ui.components.GameOverlay
 import dev.game2048.app.ui.theme.Game2048Theme
@@ -55,7 +55,7 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewMod
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(32.dp),
-                onMove = viewModel::onMove
+                onMove = viewModel::move
             )
         }
 

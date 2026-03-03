@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.game2048.app.domain.models.Direction
+import dev.game2048.app.domain.model.Direction
 import dev.game2048.app.ui.modifiers.onSwipe
 import dev.game2048.app.ui.theme.Game2048Theme
 import dev.game2048.app.ui.theme.GridBackground

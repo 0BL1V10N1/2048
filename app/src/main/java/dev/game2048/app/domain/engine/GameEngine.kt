@@ -1,6 +1,6 @@
 package dev.game2048.app.domain.engine
 
-import dev.game2048.app.domain.models.Direction
+import dev.game2048.app.domain.model.Direction
 import dev.game2048.app.utils.GameConstants
 import kotlin.random.Random
 

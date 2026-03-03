@@ -3,8 +3,8 @@ package dev.game2048.app.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.game2048.app.domain.engine.GameEngine
-import dev.game2048.app.domain.models.Direction
-import dev.game2048.app.domain.models.GameState
+import dev.game2048.app.domain.model.Direction
+import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.utils.GameConstants
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +38,7 @@ class GameViewModel : ViewModel() {
         isMoving = false
     }
 
-    fun onMove(direction: Direction) {
+    fun move(direction: Direction) {
         if (isMoving || _state.value != GameState.Playing) return
 
         viewModelScope.launch {
