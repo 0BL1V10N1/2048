@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dev.game2048.app.domain.engine.GameEngine
 import dev.game2048.app.domain.model.Direction
 import dev.game2048.app.domain.model.GameState
+import dev.game2048.app.domain.model.HistoryState
 import dev.game2048.app.utils.GameConstants
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,16 +27,30 @@ class GameViewModel : ViewModel() {
     private val _score = MutableStateFlow(0)
     val score: StateFlow<Int> = _score.asStateFlow()
 
+    // We use an ArrayDeque to perform the undo operations
+    private val history = ArrayDeque<HistoryState>()
+
     init {
         restart()
     }
 
     fun restart() {
         engine.startGame()
+        history.clear()
         _board.value = engine.board
         _state.value = GameState.Playing
-        _score.value = 0
+        _score.value = engine.score
         isMoving = false
+    }
+
+    fun undo() {
+        if (isMoving || history.isEmpty()) return
+        val prevState = history.removeLast()
+        engine.restore(prevState.board, prevState.score, prevState.hasWon)
+
+        _board.value = engine.board
+        _score.value = engine.score
+        _state.value = GameState.Playing
     }
 
     fun move(direction: Direction) {
@@ -44,7 +59,20 @@ class GameViewModel : ViewModel() {
         viewModelScope.launch {
             isMoving = true
 
+            // Saving the old board for further restoration
+            val currentState = HistoryState(
+                board = engine.board,
+                score = engine.score,
+                hasWon = engine.hasWon
+            )
+
             if (engine.move(direction)) {
+                // add the snapshot to our arrayDeque
+                history.addLast(currentState)
+                if (history.size > GameConstants.MAX_HISTORY) {
+                    history.removeFirst()
+                }
+
                 _board.value = engine.board
 
                 delay(GameConstants.SPAWN_DELAY_MS)

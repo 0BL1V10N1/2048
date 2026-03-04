@@ -6,6 +6,10 @@ val GridBackground = Color(0xFFAD9D8F)
 val TileEmpty = Color(0x99C1B3A4)
 val GameTitle = Color(0xFF5C534B)
 
+val ScoreText = Color(0xFF222222)
+
+val HeaderButtons = Color(0xFFC73838)
+
 val Tile2 = Color(0xFFEEE4DA)
 val Tile4 = Color(0xFFEDE0C8)
 val Tile8 = Color(0xFFF2B179)

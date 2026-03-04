@@ -24,6 +24,17 @@ class GameEngine(private val size: Int = GameConstants.GRID_SIZE) {
         repeat(GameConstants.INITIAL_TILES) { spawnRandomTile() }
     }
 
+    fun restore(boardSnapshot: List<List<Int>>, previousScore: Int, previousHasWon: Boolean) {
+        for (r in 0 until size) {
+            for (c in 0 until size) {
+                grid[r][c] = boardSnapshot[r][c]
+            }
+        }
+        score = previousScore
+        hasWon = previousHasWon
+        refreshEmptyCells()
+    }
+
     fun isGameOver(): Boolean {
         if (refreshEmptyCells()) return false
         return computeGrid(Direction.LEFT).contentDeepEquals(grid) &&
