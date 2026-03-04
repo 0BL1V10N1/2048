@@ -1,13 +1,11 @@
 package dev.game2048.app.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,40 +22,38 @@ import dev.game2048.app.ui.theme.TextLight
 import dev.game2048.app.ui.theme.Tile2048
 
 @Composable
-fun GameOverlay(state: GameState, onRestart: () -> Unit) {
+fun GameOverlay(state: GameState, onRestart: () -> Unit, onKeepPlaying: () -> Unit) {
     val isWin = state == GameState.Won
     val text = if (isWin) "YOU WIN!" else "GAME OVER"
+    val buttonText = if (isWin) "Play for 4096 or more" else "Restart"
+
     val backgroundColor = if (isWin) Tile2048.copy(alpha = 0.6f) else Color.Black.copy(alpha = 0.5f)
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = backgroundColor
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+            .padding(top = 80.dp, bottom = 80.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Text(
+            text = text,
+            color = TextLight,
+            fontSize = 48.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+
+        Button(
+            onClick = if (isWin) onKeepPlaying else onRestart,
+            colors = ButtonDefaults.buttonColors(containerColor = GameTitle),
+            modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             Text(
-                text = text,
+                text = buttonText,
                 color = TextLight,
-                fontSize = 48.sp,
-                fontWeight = FontWeight.ExtraBold
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = onRestart,
-                colors = ButtonDefaults.buttonColors(containerColor = GameTitle)
-            ) {
-                Text(
-                    text = "Rejouer",
-                    color = TextLight,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
         }
     }
 }
@@ -66,7 +62,7 @@ fun GameOverlay(state: GameState, onRestart: () -> Unit) {
 @Composable
 private fun GameOverlayGameOverPreview() {
     Game2048Theme {
-        GameOverlay(state = GameState.Over, onRestart = {})
+        GameOverlay(state = GameState.Over, onRestart = {}, onKeepPlaying = {})
     }
 }
 
@@ -74,6 +70,6 @@ private fun GameOverlayGameOverPreview() {
 @Composable
 private fun GameOverlayWinPreview() {
     Game2048Theme {
-        GameOverlay(state = GameState.Won, onRestart = {})
+        GameOverlay(state = GameState.Won, onRestart = {}, onKeepPlaying = {})
     }
 }

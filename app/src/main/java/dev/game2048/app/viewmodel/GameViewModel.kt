@@ -27,6 +27,9 @@ class GameViewModel : ViewModel() {
     private val _score = MutableStateFlow(0)
     val score: StateFlow<Int> = _score.asStateFlow()
 
+    private var _keptPlaying = MutableStateFlow<Boolean>(false)
+    var keptPlaying = _keptPlaying.asStateFlow()
+
     // We use an ArrayDeque to perform the undo operations
     private val history = ArrayDeque<HistoryState>()
 
@@ -35,12 +38,17 @@ class GameViewModel : ViewModel() {
     }
 
     fun restart() {
+        _keptPlaying.value = false
         engine.startGame()
         history.clear()
         _board.value = engine.board
         _state.value = GameState.Playing
         _score.value = engine.score
         isMoving = false
+    }
+
+    fun keepPlaying() {
+        _keptPlaying.value = true
     }
 
     fun undo() {
@@ -54,7 +62,7 @@ class GameViewModel : ViewModel() {
     }
 
     fun move(direction: Direction) {
-        if (isMoving || _state.value != GameState.Playing) return
+        if (isMoving || (_state.value != GameState.Playing && !_keptPlaying.value)) return
 
         viewModelScope.launch {
             isMoving = true
@@ -82,8 +90,8 @@ class GameViewModel : ViewModel() {
                 _score.value = engine.score
 
                 _state.value = when {
-                    engine.hasWon -> GameState.Won
                     engine.isGameOver() -> GameState.Over
+                    engine.hasWon && !_keptPlaying.value -> GameState.Won
                     else -> GameState.Playing
                 }
             }
