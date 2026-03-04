@@ -44,7 +44,7 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewMod
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (state == GameState.Playing || keptPlaying) {
+            if (state == GameState.Playing || (keptPlaying && state != GameState.Over)) {
                 GameHeader(score, score, onRestart = viewModel::restart, onUndo = viewModel::undo)
             }
 
