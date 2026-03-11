@@ -39,7 +39,7 @@ fun TileCell(value: Int, modifier: Modifier = Modifier) {
 
 fun formatTile(value: Int): String = when {
     value >= 1000000 -> "${value / 1000000}M"
-    value >= 1000 -> "${value / 1000}K"
+    value >= 10000 -> "${value / 1000}K"
     else -> value.toString()
 }
 
