@@ -2,10 +2,12 @@ package dev.game2048.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,12 +22,19 @@ import dev.game2048.app.ui.theme.Game2048Theme
 import dev.game2048.app.ui.theme.GameTitle
 import dev.game2048.app.ui.theme.TextLight
 import dev.game2048.app.ui.theme.Tile2048
+import dev.game2048.app.utils.GameConstants
 
 @Composable
-fun GameOverlay(state: GameState, onRestart: () -> Unit, onKeepPlaying: () -> Unit) {
+fun GameOverlay(
+    state: GameState,
+    winTarget: Int = GameConstants.WIN_VALUE,
+    onRestart: () -> Unit,
+    onContinue: () -> Unit
+) {
     val isWin = state == GameState.Won
     val text = if (isWin) "YOU WIN!" else "GAME OVER"
-    val buttonText = if (isWin) "Play for 4096 or more" else "Restart"
+    val nextTarget = winTarget * 2
+    val buttonText = if (isWin) "Play for $nextTarget or more" else "Restart"
 
     val backgroundColor = if (isWin) Tile2048.copy(alpha = 0.6f) else Color.Black.copy(alpha = 0.5f)
 
@@ -44,8 +53,10 @@ fun GameOverlay(state: GameState, onRestart: () -> Unit, onKeepPlaying: () -> Un
         )
 
         Button(
-            onClick = if (isWin) onKeepPlaying else onRestart,
+            onClick = if (isWin) onContinue else onRestart,
+            shape = MaterialTheme.shapes.small,
             colors = ButtonDefaults.buttonColors(containerColor = GameTitle),
+            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 32.dp),
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
             Text(
@@ -62,7 +73,7 @@ fun GameOverlay(state: GameState, onRestart: () -> Unit, onKeepPlaying: () -> Un
 @Composable
 private fun GameOverlayGameOverPreview() {
     Game2048Theme {
-        GameOverlay(state = GameState.Over, onRestart = {}, onKeepPlaying = {})
+        GameOverlay(state = GameState.Over, onRestart = {}, onContinue = {})
     }
 }
 
@@ -70,6 +81,6 @@ private fun GameOverlayGameOverPreview() {
 @Composable
 private fun GameOverlayWinPreview() {
     Game2048Theme {
-        GameOverlay(state = GameState.Won, onRestart = {}, onKeepPlaying = {})
+        GameOverlay(state = GameState.Won, onRestart = {}, onContinue = {})
     }
 }

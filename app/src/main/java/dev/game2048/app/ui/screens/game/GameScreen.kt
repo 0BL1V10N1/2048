@@ -1,4 +1,4 @@
-package dev.game2048.app.ui.screens
+package dev.game2048.app.ui.screens.game
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,28 +13,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.ui.components.GameGrid
 import dev.game2048.app.ui.components.GameHeader
 import dev.game2048.app.ui.components.GameOverlay
 import dev.game2048.app.ui.theme.Game2048Theme
-import dev.game2048.app.viewmodel.GameViewModel
 
 @Composable
-fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewModel()) {
+fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = hiltViewModel()) {
     val board by viewModel.board.collectAsState()
     val state by viewModel.state.collectAsState()
-    val keptPlaying by viewModel.keptPlaying.collectAsState()
+    val winTarget by viewModel.winTarget.collectAsState()
     val score by viewModel.score.collectAsState()
     val bestScore by viewModel.bestScore.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (state == GameState.Over || (state == GameState.Won && !keptPlaying)) {
+        if (state == GameState.Over || state == GameState.Won) {
             GameOverlay(
                 state = state,
+                winTarget = winTarget,
                 onRestart = viewModel::restart,
-                onKeepPlaying = viewModel::keepPlaying
+                onContinue = viewModel::continueGame
             )
         }
 
@@ -45,7 +45,7 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewMod
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (state == GameState.Playing || (keptPlaying && state != GameState.Over)) {
+            if (state == GameState.Playing) {
                 GameHeader(score, bestScore, onRestart = viewModel::restart, onUndo = viewModel::undo)
             }
 
