@@ -27,6 +27,7 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewMod
     val state by viewModel.state.collectAsState()
     val keptPlaying by viewModel.keptPlaying.collectAsState()
     val score by viewModel.score.collectAsState()
+    val bestScore by viewModel.bestScore.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
         if (state == GameState.Over || (state == GameState.Won && !keptPlaying)) {
@@ -45,7 +46,7 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewMod
             verticalArrangement = Arrangement.Center
         ) {
             if (state == GameState.Playing || (keptPlaying && state != GameState.Over)) {
-                GameHeader(score, score, onRestart = viewModel::restart, onUndo = viewModel::undo)
+                GameHeader(score, bestScore, onRestart = viewModel::restart, onUndo = viewModel::undo)
             }
 
             GameGrid(
