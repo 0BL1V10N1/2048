@@ -11,9 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.game2048.app.ui.theme.tileColor
 import dev.game2048.app.ui.theme.tileTextColor
+import dev.game2048.app.ui.theme.formatTextValues
+import dev.game2048.app.ui.theme.tileFontSize
 
 @Composable
 fun TileCell(value: Int, modifier: Modifier = Modifier) {
@@ -25,7 +26,7 @@ fun TileCell(value: Int, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         if (value > 0) {
-            val text = formatTile(value)
+            val text = formatTextValues(value)
 
             Text(
                 text = text,
@@ -35,17 +36,4 @@ fun TileCell(value: Int, modifier: Modifier = Modifier) {
             )
         }
     }
-}
-
-fun formatTile(value: Int): String = when {
-    value >= 1000000 -> "${value / 1000000}M"
-    value >= 10000 -> "${value / 1000}K"
-    else -> value.toString()
-}
-
-fun tileFontSize(value: String) = when (value.length) {
-    1, 2 -> 36.sp
-    3 -> 30.sp
-    4 -> 24.sp
-    else -> 20.sp
 }

@@ -27,6 +27,7 @@ import dev.game2048.app.ui.theme.HeaderButtons
 import dev.game2048.app.ui.theme.ScoreText
 import dev.game2048.app.ui.theme.TextLight
 import dev.game2048.app.ui.theme.Tile2048
+import dev.game2048.app.ui.theme.formatTextValues
 
 @Composable
 fun GameHeader(score: Int, bestScore: Int, onRestart: () -> Unit, onUndo: () -> Unit) {
@@ -96,7 +97,7 @@ fun ScoreBox(label: String, value: Int, modifier: Modifier = Modifier) {
                 color = TextLight.copy(alpha = 0.7f)
             )
             Text(
-                text = "$value",
+                text = formatTextValues(value),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
