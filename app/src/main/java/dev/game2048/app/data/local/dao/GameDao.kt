@@ -7,7 +7,6 @@ import dev.game2048.app.data.local.entity.GameEntity
 
 @Dao
 interface GameDao {
-
     @Query("SELECT * FROM game_state WHERE id = 1")
     suspend fun getGameState(): GameEntity?
 
@@ -17,4 +16,3 @@ interface GameDao {
     @Query("DELETE FROM game_state WHERE id = 1")
     suspend fun deleteGameState()
 }
-

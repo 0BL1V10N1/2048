@@ -14,13 +14,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): GameDatabase =
-        Room.databaseBuilder(context, GameDatabase::class.java, "game_2048_db").build()
+        Room.databaseBuilder(context, GameDatabase::class.java, "game_2048_db")
+            .fallbackToDestructiveMigration(true)
+            .build()
 
     @Provides
     fun provideGameDao(database: GameDatabase): GameDao = database.gameDao()
 }
-

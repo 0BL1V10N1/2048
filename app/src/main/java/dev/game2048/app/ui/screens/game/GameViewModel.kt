@@ -2,19 +2,23 @@ package dev.game2048.app.ui.screens.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.game2048.app.data.local.entity.GameEntity
+import dev.game2048.app.data.repository.GameRepository
 import dev.game2048.app.domain.engine.GameEngine
 import dev.game2048.app.domain.model.Direction
 import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.domain.model.HistoryState
 import dev.game2048.app.utils.GameConstants
+import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class GameViewModel : ViewModel() {
-
+@HiltViewModel
+class GameViewModel @Inject constructor(private val repository: GameRepository) : ViewModel() {
     private var isMoving = false
     private val engine = GameEngine()
     private val history = ArrayDeque<HistoryState>()
@@ -28,27 +32,32 @@ class GameViewModel : ViewModel() {
     private val _score = MutableStateFlow(0)
     val score: StateFlow<Int> = _score.asStateFlow()
 
+    private val _bestScore = MutableStateFlow(0)
+    val bestScore: StateFlow<Int> = _bestScore.asStateFlow()
+
     private val _winTarget = MutableStateFlow(GameConstants.WIN_VALUE)
     val winTarget: StateFlow<Int> = _winTarget.asStateFlow()
 
     init {
-        restart()
+        loadOrStartGame()
     }
 
     fun restart() {
         engine.startGame()
         history.clear()
-        _board.value = engine.board
+        syncUi()
         _state.value = GameState.Playing
-        _score.value = engine.score
-        _winTarget.value = engine.winTarget
         isMoving = false
+
+        saveGame()
     }
 
     fun continueGame() {
         engine.doubleWinTarget()
         _winTarget.value = engine.winTarget
         _state.value = GameState.Playing
+
+        saveGame()
     }
 
     fun move(direction: Direction) {
@@ -64,7 +73,6 @@ class GameViewModel : ViewModel() {
             )
 
             if (engine.move(direction)) {
-                // add the snapshot to our arrayDeque
                 history.addLast(snapshot)
                 if (history.size > GameConstants.MAX_HISTORY) {
                     history.removeFirst()
@@ -77,12 +85,15 @@ class GameViewModel : ViewModel() {
                 engine.spawnRandomTile()
                 _board.value = engine.board
                 _score.value = engine.score
+                updateBestScore()
 
                 _state.value = when {
                     engine.isGameOver() -> GameState.Over
                     engine.hasWon -> GameState.Won
                     else -> GameState.Playing
                 }
+
+                saveGame()
             }
 
             isMoving = false
@@ -94,10 +105,53 @@ class GameViewModel : ViewModel() {
         val prevState = history.removeLast()
         engine.restore(prevState.board, prevState.score, prevState.winTarget)
 
+        syncUi()
+        _state.value = GameState.Playing
+
+        saveGame()
+    }
+
+    private fun loadOrStartGame() {
+        viewModelScope.launch {
+            val saved = repository.loadGame()
+            if (saved != null && saved.state != GameState.Over) {
+                engine.restore(saved.board, saved.score, saved.winTarget)
+                history.clear()
+                history.addAll(saved.history)
+
+                syncUi()
+                _bestScore.value = saved.bestScore
+                _state.value = saved.state
+            } else {
+                _bestScore.value = saved?.bestScore ?: 0
+                restart()
+            }
+        }
+    }
+
+    private fun saveGame() {
+        viewModelScope.launch {
+            repository.saveGame(
+                GameEntity(
+                    board = engine.board,
+                    score = engine.score,
+                    bestScore = _bestScore.value,
+                    winTarget = engine.winTarget,
+                    state = _state.value,
+                    history = history.toList()
+                )
+            )
+        }
+    }
+
+    private fun updateBestScore() {
+        _bestScore.value = maxOf(_bestScore.value, _score.value)
+    }
+
+    private fun syncUi() {
         _board.value = engine.board
         _score.value = engine.score
         _winTarget.value = engine.winTarget
-        _state.value = GameState.Playing
     }
 
     private fun emptyBoard(): List<List<Int>> = List(GameConstants.GRID_SIZE) { List(GameConstants.GRID_SIZE) { 0 } }
