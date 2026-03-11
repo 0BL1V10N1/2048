@@ -8,15 +8,18 @@ class GameEngine(private val size: Int = GameConstants.GRID_SIZE) {
 
     private var grid: Array<IntArray> = Array(size) { IntArray(size) }
     private val emptyCells = mutableListOf<Pair<Int, Int>>()
+
     var hasWon: Boolean = false
+        private set
+    var winTarget: Int = GameConstants.WIN_VALUE
         private set
     var score: Int = 0
         private set
-
     val board: List<List<Int>> get() = grid.map { it.toList() }
 
     fun startGame() {
         hasWon = false
+        winTarget = GameConstants.WIN_VALUE
         score = 0
         grid.forEach { row -> row.fill(0) }
 
@@ -24,14 +27,16 @@ class GameEngine(private val size: Int = GameConstants.GRID_SIZE) {
         repeat(GameConstants.INITIAL_TILES) { spawnRandomTile() }
     }
 
-    fun restore(boardSnapshot: List<List<Int>>, previousScore: Int, previousHasWon: Boolean) {
+    fun restore(boardSnapshot: List<List<Int>>, previousScore: Int, previousWinTarget: Int) {
         for (r in 0 until size) {
             for (c in 0 until size) {
                 grid[r][c] = boardSnapshot[r][c]
             }
         }
+        hasWon = false
+        winTarget = previousWinTarget
         score = previousScore
-        hasWon = previousHasWon
+
         refreshEmptyCells()
     }
 
@@ -58,6 +63,11 @@ class GameEngine(private val size: Int = GameConstants.GRID_SIZE) {
         }
 
         return hasChanged
+    }
+
+    fun doubleWinTarget() {
+        winTarget *= 2
+        hasWon = false
     }
 
     private fun computeGrid(direction: Direction): Array<IntArray> {
@@ -99,7 +109,7 @@ class GameEngine(private val size: Int = GameConstants.GRID_SIZE) {
                 val merged = row[i] * 2
                 result.add(merged)
                 score += merged
-                if (merged == GameConstants.WIN_VALUE) hasWon = true
+                if (merged == winTarget) hasWon = true
                 i += 2
             } else {
                 result.add(row[i])

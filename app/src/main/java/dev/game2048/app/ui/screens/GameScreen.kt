@@ -25,16 +25,16 @@ import dev.game2048.app.viewmodel.GameViewModel
 fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewModel()) {
     val board by viewModel.board.collectAsState()
     val state by viewModel.state.collectAsState()
-    val keptPlaying by viewModel.keptPlaying.collectAsState()
+    val winTarget by viewModel.winTarget.collectAsState()
     val score by viewModel.score.collectAsState()
-    val bestScore by viewModel.bestScore.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
-        if (state == GameState.Over || (state == GameState.Won && !keptPlaying)) {
+        if (state == GameState.Over || state == GameState.Won) {
             GameOverlay(
                 state = state,
+                winTarget = winTarget,
                 onRestart = viewModel::restart,
-                onKeepPlaying = viewModel::keepPlaying
+                onContinue = viewModel::continueGame
             )
         }
 
@@ -45,8 +45,8 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewMod
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            if (state == GameState.Playing || (keptPlaying && state != GameState.Over)) {
-                GameHeader(score, bestScore, onRestart = viewModel::restart, onUndo = viewModel::undo)
+            if (state == GameState.Playing) {
+                GameHeader(score, score, onRestart = viewModel::restart, onUndo = viewModel::undo)
             }
 
             GameGrid(
