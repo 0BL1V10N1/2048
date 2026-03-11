@@ -12,7 +12,4 @@ interface GameDao {
 
     @Upsert
     suspend fun saveGameState(entity: GameEntity)
-
-    @Query("DELETE FROM game_state WHERE id = 1")
-    suspend fun deleteGameState()
 }
