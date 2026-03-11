@@ -24,12 +24,27 @@ fun TileCell(value: Int, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         if (value > 0) {
+            val text = formatTile(value)
+
             Text(
-                text = value.toString(),
-                fontSize = 24.sp,
+                text = text,
+                fontSize = tileFontSize(text),
                 fontWeight = FontWeight.Bold,
                 color = tileTextColor(value)
             )
         }
     }
+}
+
+fun formatTile(value: Int): String = when {
+    value >= 1000000 -> "${value / 1000000}M"
+    value >= 1000 -> "${value / 1000}K"
+    else -> value.toString()
+}
+
+fun tileFontSize(value: String) = when (value.length) {
+    1, 2 -> 36.sp
+    3 -> 30.sp
+    4 -> 24.sp
+    else -> 20.sp
 }
