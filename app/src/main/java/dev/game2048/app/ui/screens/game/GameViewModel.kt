@@ -1,4 +1,4 @@
-package dev.game2048.app.viewmodel
+package dev.game2048.app.ui.screens.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
