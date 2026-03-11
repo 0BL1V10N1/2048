@@ -1,4 +1,4 @@
-package dev.game2048.app.ui.screens
+package dev.game2048.app.ui.screens.game
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,6 @@ import dev.game2048.app.ui.components.GameGrid
 import dev.game2048.app.ui.components.GameHeader
 import dev.game2048.app.ui.components.GameOverlay
 import dev.game2048.app.ui.theme.Game2048Theme
-import dev.game2048.app.viewmodel.GameViewModel
 
 @Composable
 fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel = viewModel()) {
