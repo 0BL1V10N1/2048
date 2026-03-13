@@ -20,7 +20,9 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class GameViewModel @Inject constructor(private val repository: GameRepository) : ViewModel() {
     private var isMoving = false
-    private val engine = GameEngine()
+
+    private var currentGridSize = GameConstants.GRID_SIZE
+    private var engine = GameEngine(currentGridSize)
     private val history = ArrayDeque<HistoryState>()
 
     private val _board = MutableStateFlow(emptyBoard())
@@ -42,7 +44,10 @@ class GameViewModel @Inject constructor(private val repository: GameRepository) 
         loadOrStartGame()
     }
 
-    fun restart() {
+    fun restart(size: Int = currentGridSize) {
+        currentGridSize = size
+        engine = GameEngine(currentGridSize)
+
         engine.startGame()
         history.clear()
         syncUi()
@@ -115,6 +120,8 @@ class GameViewModel @Inject constructor(private val repository: GameRepository) 
         viewModelScope.launch {
             val saved = repository.loadGame()
             if (saved != null && saved.state != GameState.Over) {
+                currentGridSize = saved.board.size
+                engine = GameEngine(currentGridSize)
                 engine.restore(saved.board, saved.score, saved.winTarget)
                 history.clear()
                 history.addAll(saved.history)
@@ -124,7 +131,7 @@ class GameViewModel @Inject constructor(private val repository: GameRepository) 
                 _state.value = saved.state
             } else {
                 _bestScore.value = saved?.bestScore ?: 0
-                restart()
+                restart(currentGridSize)
             }
         }
     }
@@ -154,5 +161,5 @@ class GameViewModel @Inject constructor(private val repository: GameRepository) 
         _winTarget.value = engine.winTarget
     }
 
-    private fun emptyBoard(): List<List<Int>> = List(GameConstants.GRID_SIZE) { List(GameConstants.GRID_SIZE) { 0 } }
+    private fun emptyBoard(): List<List<Int>> = List(currentGridSize) { List(currentGridSize) { 0 } }
 }
