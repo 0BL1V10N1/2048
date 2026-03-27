@@ -3,14 +3,15 @@ package dev.game2048.app.data.local.converters
 import androidx.room.TypeConverter
 import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.domain.model.HistoryState
+import dev.game2048.app.domain.model.Tile
 import kotlinx.serialization.json.Json
 
 class GameConverters {
     @TypeConverter
-    fun fromBoard(board: List<List<Int>>): String = Json.encodeToString(board)
+    fun fromBoard(board: List<List<Tile?>>): String = Json.encodeToString(board)
 
     @TypeConverter
-    fun toBoard(json: String): List<List<Int>> = Json.decodeFromString(json)
+    fun toBoard(json: String): List<List<Tile?>> = Json.decodeFromString(json)
 
     @TypeConverter
     fun fromGameState(state: GameState): String = when (state) {

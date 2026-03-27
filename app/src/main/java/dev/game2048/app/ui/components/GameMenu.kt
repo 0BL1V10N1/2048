@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.SwipeRight
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -51,7 +52,9 @@ fun SettingsDialog(
     onSoundToggled: (Boolean) -> Unit,
     onChangeGridSize: (Int) -> Unit,
     currentTheme: Theme,
-    onThemeChanged: (Theme) -> Unit
+    onThemeChanged: (Theme) -> Unit,
+    isAnimationEnabled: Boolean,
+    onAnimationEnabled: (Boolean) -> Unit
 ) {
     var isSelectingSize by remember { mutableStateOf(false) }
 
@@ -73,7 +76,9 @@ fun SettingsDialog(
                         onDismiss()
                     },
                     currentTheme = currentTheme,
-                    onThemeChanged = onThemeChanged
+                    onThemeChanged = onThemeChanged,
+                    isAnimationEnabled = isAnimationEnabled,
+                    onAnimationEnabled = onAnimationEnabled
                 )
             },
             confirmButton = {
@@ -118,6 +123,8 @@ private fun DialogContent(
     isSelectingSize: Boolean,
     isSoundEnabled: Boolean,
     onSoundToggled: (Boolean) -> Unit,
+    isAnimationEnabled: Boolean,
+    onAnimationEnabled: (Boolean) -> Unit,
     onEnterSizeSelection: () -> Unit,
     onSizeSelected: (Int) -> Unit,
     currentTheme: Theme,
@@ -130,7 +137,9 @@ private fun DialogContent(
                 onSoundToggled = onSoundToggled,
                 onGridSize = onEnterSizeSelection,
                 currentTheme = currentTheme,
-                onThemeChanged = onThemeChanged
+                onThemeChanged = onThemeChanged,
+                isAnimationEnabled = isAnimationEnabled,
+                onAnimationEnabled = onAnimationEnabled
             )
         } else {
             SizeSelectionActions(onSizeSelected)
@@ -142,6 +151,8 @@ private fun DialogContent(
 private fun MainActions(
     isSoundEnabled: Boolean,
     onSoundToggled: (Boolean) -> Unit,
+    isAnimationEnabled: Boolean,
+    onAnimationEnabled: (Boolean) -> Unit,
     onGridSize: () -> Unit,
     currentTheme: Theme,
     onThemeChanged: (Theme) -> Unit
@@ -151,6 +162,7 @@ private fun MainActions(
         modifier = Modifier.padding(vertical = 8.dp)
     ) {
         SoundSection(isSoundEnabled, onSoundToggled)
+        AnimationSection(isAnimationEnabled, onAnimationEnabled)
         ThemeSection(onThemeChanged, currentTheme)
         MenuButtonItem("Change grid size", onClick = onGridSize)
     }
@@ -267,6 +279,30 @@ private fun SoundSection(isSoundEnabled: Boolean, onSoundToggled: (Boolean) -> U
         Switch(
             checked = isSoundEnabled,
             onCheckedChange = onSoundToggled
+        )
+    }
+}
+
+@Composable
+private fun AnimationSection(isAnimationEnabled: Boolean, onAnimationEnabled: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Filled.SwipeRight,
+                contentDescription = "animation icon",
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text("Animation", style = MaterialTheme.typography.bodyLarge)
+        }
+
+        Switch(
+            checked = isAnimationEnabled,
+            onCheckedChange = onAnimationEnabled
         )
     }
 }

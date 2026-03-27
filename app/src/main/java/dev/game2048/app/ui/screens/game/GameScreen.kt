@@ -33,7 +33,9 @@ fun GameScreen(
     isSoundEnabled: Boolean = true,
     onSoundToggled: (Boolean) -> Unit = {},
     currentTheme: Theme = Theme.LIGHT,
-    onThemeChanged: (Theme) -> Unit = {}
+    onThemeChanged: (Theme) -> Unit = {},
+    isAnimationEnabled: Boolean = true,
+    onAnimationEnabled: (Boolean) -> Unit = {}
 ) {
     val board by viewModel.board.collectAsState()
     val state by viewModel.state.collectAsState()
@@ -70,7 +72,8 @@ fun GameScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
-                onMove = viewModel::move
+                onMove = viewModel::move,
+                animated = isAnimationEnabled
             )
 
             SettingsDialog(
@@ -83,7 +86,9 @@ fun GameScreen(
                 isSoundEnabled = isSoundEnabled,
                 onSoundToggled = onSoundToggled,
                 currentTheme = currentTheme,
-                onThemeChanged = onThemeChanged
+                onThemeChanged = onThemeChanged,
+                onAnimationEnabled = onAnimationEnabled,
+                isAnimationEnabled = isAnimationEnabled
             )
         }
     }

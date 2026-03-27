@@ -30,12 +30,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val defaultSoundState = prefs.getBoolean("sound_enabled", true)
+        val defaultAnimationState = prefs.getBoolean("animation_enabled", true)
         val savedThemeName = prefs.getString("theme_pref", Theme.LIGHT.name) ?: Theme.LIGHT.name
 
         mediaPlayer.initMediaPlayer(this)
 
         setContent {
             var isSoundEnabled by remember { mutableStateOf(defaultSoundState) }
+            var isAnimationEnabled by remember { mutableStateOf(defaultAnimationState) }
             var currentTheme by remember { mutableStateOf(Theme.valueOf(savedThemeName)) }
 
             Game2048Theme(themeType = currentTheme) {
@@ -57,6 +59,11 @@ class MainActivity : ComponentActivity() {
                         onThemeChanged = { newTheme ->
                             currentTheme = newTheme
                             prefs.edit { putString("theme_pref", newTheme.name) }
+                        },
+                        isAnimationEnabled = isAnimationEnabled,
+                        onAnimationEnabled = { enabled ->
+                            isAnimationEnabled = enabled
+                            prefs.edit { putBoolean("animation_enabled", enabled) }
                         }
                     )
                 }

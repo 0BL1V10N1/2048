@@ -13,6 +13,7 @@ import dev.game2048.app.domain.engine.GameEngine
 import dev.game2048.app.domain.model.Direction
 import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.domain.model.HistoryState
+import dev.game2048.app.domain.model.Tile
 import dev.game2048.app.utils.GameConstants
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -36,7 +37,7 @@ class GameViewModel @Inject constructor(
     private val history = ArrayDeque<HistoryState>()
 
     private val _board = MutableStateFlow(emptyBoard())
-    val board: StateFlow<List<List<Int>>> = _board.asStateFlow()
+    val board: StateFlow<List<List<Tile?>>> = _board.asStateFlow()
 
     private val _state = MutableStateFlow<GameState>(GameState.Playing)
     val state: StateFlow<GameState> = _state.asStateFlow()
@@ -179,5 +180,5 @@ class GameViewModel @Inject constructor(
         audioPlayer.release()
     }
 
-    private fun emptyBoard(): List<List<Int>> = List(currentGridSize) { List(currentGridSize) { 0 } }
+    private fun emptyBoard(): List<List<Tile?>> = List(currentGridSize) { List(currentGridSize) { null } }
 }
