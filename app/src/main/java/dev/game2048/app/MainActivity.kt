@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.content.edit
 import dagger.hilt.android.AndroidEntryPoint
+import dev.game2048.app.domain.model.GameSettings
 import dev.game2048.app.ui.screens.game.GameScreen
 import dev.game2048.app.ui.theme.Game2048Theme
 import dev.game2048.app.ui.theme.Theme
@@ -29,41 +30,40 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val defaultSoundState = prefs.getBoolean("sound_enabled", true)
-        val defaultAnimationState = prefs.getBoolean("animation_enabled", true)
-        val savedThemeName = prefs.getString("theme_pref", Theme.LIGHT.name) ?: Theme.LIGHT.name
-
         mediaPlayer.initMediaPlayer(this)
 
-        setContent {
-            var isSoundEnabled by remember { mutableStateOf(defaultSoundState) }
-            var isAnimationEnabled by remember { mutableStateOf(defaultAnimationState) }
-            var currentTheme by remember { mutableStateOf(Theme.valueOf(savedThemeName)) }
+        val initialSettings = GameSettings(
+            isSoundEnabled = prefs.getBoolean("sound_enabled", true),
+            isAnimationEnabled = prefs.getBoolean("animation_enabled", true),
+            isAccelerometerEnabled = prefs.getBoolean("sensor_enabled", false),
+            currentTheme = Theme.valueOf(prefs.getString("theme_pref", Theme.LIGHT.name) ?: Theme.LIGHT.name)
+        )
 
-            Game2048Theme(themeType = currentTheme) {
+        setContent {
+            var settings by remember { mutableStateOf(initialSettings) }
+
+            Game2048Theme(themeType = settings.currentTheme) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     GameScreen(
                         modifier = Modifier.padding(innerPadding),
-                        isSoundEnabled = isSoundEnabled,
-                        onSoundToggled = { enabled ->
-                            isSoundEnabled = enabled
-                            prefs.edit { putBoolean("sound_enabled", enabled) }
-
-                            if (enabled) {
-                                mediaPlayer.startMediaPlayer()
-                            } else {
-                                mediaPlayer.pauseMediaPlayer()
+                        settings = settings,
+                        onSettingsChanged = { newSettings ->
+                            if (newSettings.isSoundEnabled != settings.isSoundEnabled) {
+                                if (newSettings.isSoundEnabled) {
+                                    mediaPlayer.startMediaPlayer()
+                                } else {
+                                    mediaPlayer.pauseMediaPlayer()
+                                }
                             }
-                        },
-                        currentTheme = currentTheme,
-                        onThemeChanged = { newTheme ->
-                            currentTheme = newTheme
-                            prefs.edit { putString("theme_pref", newTheme.name) }
-                        },
-                        isAnimationEnabled = isAnimationEnabled,
-                        onAnimationEnabled = { enabled ->
-                            isAnimationEnabled = enabled
-                            prefs.edit { putBoolean("animation_enabled", enabled) }
+
+                            prefs.edit {
+                                putBoolean("sound_enabled", newSettings.isSoundEnabled)
+                                putBoolean("animation_enabled", newSettings.isAnimationEnabled)
+                                putBoolean("sensor_enabled", newSettings.isAccelerometerEnabled)
+                                putString("theme_pref", newSettings.currentTheme.name)
+                            }
+
+                            settings = newSettings
                         }
                     )
                 }

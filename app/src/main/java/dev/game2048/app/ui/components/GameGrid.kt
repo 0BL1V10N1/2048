@@ -25,12 +25,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.game2048.app.domain.model.Direction
 import dev.game2048.app.domain.model.Tile
+import dev.game2048.app.ui.modifiers.onSensorTilt
 import dev.game2048.app.ui.modifiers.onSwipe
 import dev.game2048.app.ui.theme.Game2048Theme
 import dev.game2048.app.ui.theme.LocalGameColors
 
 @Composable
-fun GameGrid(board: List<List<Tile?>>, modifier: Modifier = Modifier, onMove: (Direction) -> Unit, animated: Boolean) {
+fun GameGrid(
+    board: List<List<Tile?>>,
+    modifier: Modifier = Modifier,
+    onMove: (Direction) -> Unit,
+    animated: Boolean,
+    isAccelerometerEnabled: Boolean
+) {
     val gameColors = LocalGameColors.current
 
     BoxWithConstraints(
@@ -38,7 +45,8 @@ fun GameGrid(board: List<List<Tile?>>, modifier: Modifier = Modifier, onMove: (D
             .aspectRatio(1f)
             .clip(RoundedCornerShape(12.dp))
             .background(gameColors.gridBackground)
-            .onSwipe { direction -> onMove(direction) }
+            .onSwipe { direction -> if (!isAccelerometerEnabled) onMove(direction) }
+            .onSensorTilt(enabled = isAccelerometerEnabled) { direction -> onMove(direction) }
             .padding(8.dp)
     ) {
         val spacing = 8.dp
@@ -110,7 +118,8 @@ private fun GameGridPreview() {
                 .fillMaxWidth()
                 .padding(16.dp),
             onMove = {},
-            animated = false
+            animated = false,
+            isAccelerometerEnabled = false
         )
     }
 }

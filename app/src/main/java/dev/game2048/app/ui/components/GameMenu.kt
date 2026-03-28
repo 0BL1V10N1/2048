@@ -13,10 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.SwipeRight
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -39,6 +44,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.game2048.app.domain.model.GameSettings
 import dev.game2048.app.ui.theme.Theme
 import dev.game2048.app.ui.theme.getThemeData
 
@@ -46,37 +52,27 @@ import dev.game2048.app.ui.theme.getThemeData
 fun SettingsDialog(
     showDialog: Boolean,
     onDismiss: () -> Unit,
-    isSoundEnabled: Boolean,
-    onSoundToggled: (Boolean) -> Unit,
-    onChangeGridSize: (Int) -> Unit,
-    currentTheme: Theme,
-    onThemeChanged: (Theme) -> Unit,
-    isAnimationEnabled: Boolean,
-    onAnimationEnabled: (Boolean) -> Unit
+    settings: GameSettings,
+    onSettingsChanged: (GameSettings) -> Unit,
+    onChangeGridSize: (Int) -> Unit
 ) {
     var isSelectingSize by remember { mutableStateOf(false) }
 
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = {
-                onDismiss()
-            },
+            onDismissRequest = onDismiss,
             title = { DialogTitle(isSelectingSize) },
             text = {
                 DialogContent(
                     isSelectingSize = isSelectingSize,
-                    isSoundEnabled = isSoundEnabled,
-                    onSoundToggled = onSoundToggled,
+                    settings = settings,
+                    onSettingsChanged = onSettingsChanged,
                     onEnterSizeSelection = { isSelectingSize = true },
                     onSizeSelected = { size ->
                         onChangeGridSize(size)
                         isSelectingSize = false
                         onDismiss()
-                    },
-                    currentTheme = currentTheme,
-                    onThemeChanged = onThemeChanged,
-                    isAnimationEnabled = isAnimationEnabled,
-                    onAnimationEnabled = onAnimationEnabled
+                    }
                 )
             },
             confirmButton = {
@@ -91,79 +87,19 @@ fun SettingsDialog(
 }
 
 @Composable
-private fun SettingsSwitchRow(
-    label: String,
-    icon: ImageVector,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    iconContentDescription: String? = null
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = icon,
-                contentDescription = iconContentDescription,
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(label, style = MaterialTheme.typography.bodyLarge)
-        }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
-    }
-}
-
-@Composable
-fun BoxScope.MenuButton(onClick: () -> Unit) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier
-            .padding(16.dp)
-            .align(Alignment.TopStart)
-    ) {
-        Icon(
-            imageVector = Icons.Default.Menu,
-            contentDescription = "Menu",
-            tint = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-@Composable
-private fun DialogTitle(isSelectingSize: Boolean) {
-    Text(
-        text = if (isSelectingSize) "Select Grid Size" else "Menu",
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.headlineSmall
-    )
-}
-
-@Composable
 private fun DialogContent(
     isSelectingSize: Boolean,
-    isSoundEnabled: Boolean,
-    onSoundToggled: (Boolean) -> Unit,
-    isAnimationEnabled: Boolean,
-    onAnimationEnabled: (Boolean) -> Unit,
+    settings: GameSettings,
+    onSettingsChanged: (GameSettings) -> Unit,
     onEnterSizeSelection: () -> Unit,
-    onSizeSelected: (Int) -> Unit,
-    currentTheme: Theme,
-    onThemeChanged: (Theme) -> Unit
+    onSizeSelected: (Int) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         if (!isSelectingSize) {
             MainActions(
-                isSoundEnabled = isSoundEnabled,
-                onSoundToggled = onSoundToggled,
-                onGridSize = onEnterSizeSelection,
-                currentTheme = currentTheme,
-                onThemeChanged = onThemeChanged,
-                isAnimationEnabled = isAnimationEnabled,
-                onAnimationEnabled = onAnimationEnabled
+                settings = settings,
+                onSettingsChanged = onSettingsChanged,
+                onGridSize = onEnterSizeSelection
             )
         } else {
             SizeSelectionActions(onSizeSelected)
@@ -172,122 +108,58 @@ private fun DialogContent(
 }
 
 @Composable
-private fun MainActions(
-    isSoundEnabled: Boolean,
-    onSoundToggled: (Boolean) -> Unit,
-    isAnimationEnabled: Boolean,
-    onAnimationEnabled: (Boolean) -> Unit,
-    onGridSize: () -> Unit,
-    currentTheme: Theme,
-    onThemeChanged: (Theme) -> Unit
-) {
+private fun MainActions(settings: GameSettings, onSettingsChanged: (GameSettings) -> Unit, onGridSize: () -> Unit) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(vertical = 8.dp)
     ) {
         SettingsSwitchRow(
             label = "Sound",
-            icon = if (isSoundEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
-            checked = isSoundEnabled,
-            onCheckedChange = onSoundToggled
+            icon = if (settings.isSoundEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
+            checked = settings.isSoundEnabled,
+            onCheckedChange = { onSettingsChanged(settings.copy(isSoundEnabled = it)) }
         )
 
         SettingsSwitchRow(
             label = "Animation",
             icon = Icons.Filled.SwipeRight,
-            checked = isAnimationEnabled,
-            onCheckedChange = onAnimationEnabled
+            checked = settings.isAnimationEnabled,
+            onCheckedChange = { onSettingsChanged(settings.copy(isAnimationEnabled = it)) }
         )
 
-        ThemeSection(onThemeChanged, currentTheme)
+        SettingsSwitchRow(
+            label = "Accelerometer",
+            icon = Icons.AutoMirrored.Filled.DirectionsRun,
+            checked = settings.isAccelerometerEnabled,
+            onCheckedChange = { onSettingsChanged(settings.copy(isAccelerometerEnabled = it)) }
+        )
+
+        ThemeSection(
+            currentTheme = settings.currentTheme,
+            onThemeChanged = { onSettingsChanged(settings.copy(currentTheme = it)) }
+        )
 
         MenuButtonItem("Change grid size", onClick = onGridSize)
     }
 }
 
 @Composable
-private fun SizeSelectionActions(onSizeSelected: (Int) -> Unit) {
-    WarningText("Changing size will restart the game.")
-
-    val sizes = listOf(3, 4, 5, 6)
-    sizes.chunked(2).forEach { rowSizes ->
-        SizeRow(rowSizes, onSizeSelected)
-    }
-}
-
-@Composable
-private fun SizeRow(sizes: List<Int>, onSizeSelected: (Int) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        sizes.forEach { size ->
-            SizeButton(size, onClick = { onSizeSelected(size) })
+private fun SettingsSwitchRow(label: String, icon: ImageVector, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(label, style = MaterialTheme.typography.bodyLarge)
         }
-    }
-}
-
-@Composable
-private fun MenuButtonItem(label: String, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(label)
-    }
-}
-
-@Composable
-private fun RowScope.SizeButton(size: Int, onClick: () -> Unit) {
-    OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier
-            .weight(1f)
-            .padding(2.dp)
-    ) {
-        Text("${size}x$size")
-    }
-}
-
-@Composable
-private fun WarningText(text: String) {
-    Text(
-        text = text,
-        color = MaterialTheme.colorScheme.error,
-        style = MaterialTheme.typography.bodySmall,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-    )
-}
-
-@Composable
-private fun DialogNavigationButton(isSelectingSize: Boolean, onBack: () -> Unit, onClose: () -> Unit) {
-    TextButton(onClick = if (isSelectingSize) onBack else onClose) {
-        Text(if (isSelectingSize) "Back" else "Close")
-    }
-}
-
-@Composable
-private fun ThemeOption(isSelected: Boolean, icon: ImageVector, label: String, color: Color, onClick: () -> Unit) {
-    val alpha = if (isSelected) 1f else 0.4f
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
-            .clickable(onClick = onClick)
-            .padding(8.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = color.copy(alpha = alpha),
-            modifier = Modifier.size(32.dp)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-        )
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
@@ -317,5 +189,86 @@ private fun ThemeSection(onThemeChanged: (Theme) -> Unit, currentTheme: Theme) {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ThemeOption(isSelected: Boolean, icon: ImageVector, label: String, color: Color, onClick: () -> Unit) {
+    val alpha = if (isSelected) 1f else 0.4f
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.small)
+            .clickable(onClick = onClick)
+            .padding(8.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = color.copy(alpha = alpha),
+            modifier = Modifier.size(32.dp)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
+    }
+}
+
+@Composable
+fun BoxScope.MenuButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick, modifier = Modifier.padding(16.dp).align(Alignment.TopStart)) {
+        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.primary)
+    }
+}
+
+@Composable
+private fun DialogTitle(isSelectingSize: Boolean) {
+    Text(
+        text = if (isSelectingSize) "Select Grid Size" else "Menu",
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.headlineSmall
+    )
+}
+
+@Composable
+private fun SizeSelectionActions(onSizeSelected: (Int) -> Unit) {
+    WarningText("Changing size will restart the game.")
+    val sizes = listOf(3, 4, 5, 6)
+    sizes.chunked(2).forEach { rowSizes ->
+        Row(modifier = Modifier.fillMaxWidth()) {
+            rowSizes.forEach { size ->
+                OutlinedButton(onClick = { onSizeSelected(size) }, modifier = Modifier.weight(1f).padding(2.dp)) {
+                    Text("${size}x$size")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MenuButtonItem(label: String, onClick: () -> Unit) {
+    Button(onClick = onClick, modifier = Modifier.fillMaxWidth()) { Text(label) }
+}
+
+@Composable
+private fun WarningText(text: String) {
+    Text(
+        text = text,
+        color = MaterialTheme.colorScheme.error,
+        style = MaterialTheme.typography.bodySmall,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+    )
+}
+
+@Composable
+private fun DialogNavigationButton(isSelectingSize: Boolean, onBack: () -> Unit, onClose: () -> Unit) {
+    TextButton(onClick = if (isSelectingSize) onBack else onClose) {
+        Text(if (isSelectingSize) "Back" else "Close")
     }
 }

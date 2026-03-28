@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import dev.game2048.app.domain.model.GameSettings
 import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.ui.components.GameGrid
 import dev.game2048.app.ui.components.GameHeader
@@ -24,18 +25,13 @@ import dev.game2048.app.ui.components.GameOverlay
 import dev.game2048.app.ui.components.MenuButton
 import dev.game2048.app.ui.components.SettingsDialog
 import dev.game2048.app.ui.theme.Game2048Theme
-import dev.game2048.app.ui.theme.Theme
 
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
     viewModel: GameViewModel = hiltViewModel(),
-    isSoundEnabled: Boolean = true,
-    onSoundToggled: (Boolean) -> Unit = {},
-    currentTheme: Theme = Theme.LIGHT,
-    onThemeChanged: (Theme) -> Unit = {},
-    isAnimationEnabled: Boolean = true,
-    onAnimationEnabled: (Boolean) -> Unit = {}
+    settings: GameSettings,
+    onSettingsChanged: (GameSettings) -> Unit
 ) {
     val board by viewModel.board.collectAsState()
     val state by viewModel.state.collectAsState()
@@ -47,6 +43,7 @@ fun GameScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         MenuButton(onClick = { showSettings = true })
+
         if (state == GameState.Over || state == GameState.Won) {
             GameOverlay(
                 state = state,
@@ -73,22 +70,19 @@ fun GameScreen(
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 onMove = viewModel::move,
-                animated = isAnimationEnabled
+                animated = settings.isAnimationEnabled,
+                isAccelerometerEnabled = settings.isAccelerometerEnabled
             )
 
             SettingsDialog(
                 showDialog = showSettings,
                 onDismiss = { showSettings = false },
+                settings = settings,
+                onSettingsChanged = onSettingsChanged,
                 onChangeGridSize = { newSize ->
                     viewModel.restart(newSize)
                     showSettings = false
-                },
-                isSoundEnabled = isSoundEnabled,
-                onSoundToggled = onSoundToggled,
-                currentTheme = currentTheme,
-                onThemeChanged = onThemeChanged,
-                onAnimationEnabled = onAnimationEnabled,
-                isAnimationEnabled = isAnimationEnabled
+                }
             )
         }
     }
@@ -98,6 +92,9 @@ fun GameScreen(
 @Composable
 private fun GameScreenPreview() {
     Game2048Theme {
-        GameScreen()
+        GameScreen(
+            settings = GameSettings(),
+            onSettingsChanged = {}
+        )
     }
 }
