@@ -6,6 +6,7 @@ import dev.game2048.app.domain.model.HistoryState
 import kotlinx.serialization.json.Json
 
 class GameConverters {
+
     @TypeConverter
     fun fromBoard(board: List<List<Int>>): String = Json.encodeToString(board)
 

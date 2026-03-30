@@ -29,7 +29,7 @@ import dev.game2048.app.ui.theme.TextLight
 import dev.game2048.app.ui.theme.Tile2048
 
 @Composable
-fun GameHeader(score: Int, bestScore: Int, onRestart: () -> Unit, onUndo: () -> Unit) {
+fun GameHeader(score: Int, bestScore: Int, undosRemaining: Int, onRestart: () -> Unit, onUndo: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,13 +38,13 @@ fun GameHeader(score: Int, bestScore: Int, onRestart: () -> Unit, onUndo: () -> 
     ) {
         TitleBadge(modifier = Modifier.weight(1f).fillMaxHeight())
 
-        HeaderControls(
-            score = score,
-            bestScore = bestScore,
-            onRestart = onRestart,
-            onUndo = onUndo,
-            modifier = Modifier.weight(2.2f)
-        )
+        Column(
+            modifier = Modifier.weight(2.2f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ScoreRow(score = score, bestScore = bestScore)
+            ActionRow(undosRemaining = undosRemaining, onRestart = onRestart, onUndo = onUndo)
+        }
     }
 }
 
@@ -63,29 +63,29 @@ private fun TitleBadge(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun HeaderControls(
-    score: Int,
-    bestScore: Int,
-    onRestart: () -> Unit,
-    onUndo: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            ScoreBox("SCORE", score, Modifier.weight(1f))
-            ScoreBox("BEST", bestScore, Modifier.weight(1f))
-        }
+private fun ScoreRow(score: Int, bestScore: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        ScoreBox("SCORE", score, Modifier.weight(1f))
+        ScoreBox("BEST", bestScore, Modifier.weight(1f))
+    }
+}
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            HeaderButton("NEW", onRestart, Modifier.weight(1f))
-            HeaderButton("UNDO", onUndo, Modifier.weight(1f))
-        }
+@Composable
+private fun ActionRow(undosRemaining: Int, onRestart: () -> Unit, onUndo: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        HeaderButton("NEW", onRestart, Modifier.weight(1f))
+        HeaderButton(
+            text = "UNDO",
+            onClick = onUndo,
+            modifier = Modifier.weight(1f),
+            enabled = undosRemaining > 0
+        )
     }
 }
 
@@ -124,12 +124,16 @@ private fun scoreFontSize(length: Int) = when {
 }
 
 @Composable
-private fun HeaderButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun HeaderButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
     Button(
         onClick = onClick,
         modifier = modifier.height(42.dp),
+        enabled = enabled,
         shape = MaterialTheme.shapes.extraSmall,
-        colors = ButtonDefaults.buttonColors(containerColor = HeaderButtons)
+        colors = ButtonDefaults.buttonColors(
+            containerColor = HeaderButtons,
+            disabledContainerColor = HeaderButtons.copy(alpha = 0.4f)
+        )
     ) {
         Text(
             text = text,
@@ -144,6 +148,6 @@ private fun HeaderButton(text: String, onClick: () -> Unit, modifier: Modifier =
 @Composable
 private fun GameOverlayGameHeaderPreview() {
     Game2048Theme {
-        GameHeader(score = 14580, bestScore = 128364, onRestart = {}, onUndo = {})
+        GameHeader(score = 14580, bestScore = 128364, undosRemaining = 2, onRestart = {}, onUndo = {})
     }
 }
