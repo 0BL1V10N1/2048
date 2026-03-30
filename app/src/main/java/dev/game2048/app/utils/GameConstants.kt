@@ -7,5 +7,5 @@ object GameConstants {
     const val WIN_VALUE = 2048
     const val SPAWN_DELAY_MS = 80L
 
-    const val MAX_HISTORY = 3
+    const val MAX_UNDO = 3
 }

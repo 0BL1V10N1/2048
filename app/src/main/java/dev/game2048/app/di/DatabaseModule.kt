@@ -7,13 +7,16 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dev.game2048.app.data.local.dao.GameDao
+import dev.game2048.app.data.local.dao.GameStateDao
+import dev.game2048.app.data.local.dao.StatsDao
 import dev.game2048.app.data.local.database.GameDatabase
+import dev.game2048.app.data.local.datastore.SettingsDataStore
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): GameDatabase =
@@ -22,5 +25,12 @@ object DatabaseModule {
             .build()
 
     @Provides
-    fun provideGameDao(database: GameDatabase): GameDao = database.gameDao()
+    fun provideGameStateDao(database: GameDatabase): GameStateDao = database.gameStateDao()
+
+    @Provides
+    fun provideStatsDao(database: GameDatabase): StatsDao = database.statsDao()
+
+    @Provides
+    @Singleton
+    fun provideSettingsDataStore(@ApplicationContext context: Context): SettingsDataStore = SettingsDataStore(context)
 }
