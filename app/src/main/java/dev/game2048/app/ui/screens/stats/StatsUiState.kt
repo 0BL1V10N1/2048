@@ -7,7 +7,8 @@ data class StatsUiState(
     val gamesPlayed: Int = 0,
     val wins: Int = 0,
     val losses: Int = 0,
-    val topTile: Int = 0
+    val topTile: Int = 0,
+    val topScores: List<Int> = emptyList()
 )
 
 fun GameStatsEntity.toUiState(): StatsUiState = StatsUiState(
@@ -15,5 +16,6 @@ fun GameStatsEntity.toUiState(): StatsUiState = StatsUiState(
     gamesPlayed = gamesPlayed,
     wins = wins,
     losses = losses,
-    topTile = topTile
+    topTile = topTile,
+    topScores = topScores
 )

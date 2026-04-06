@@ -209,11 +209,17 @@ class GameViewModel @Inject constructor(
     private fun updateStats(endState: GameState) {
         viewModelScope.launch {
             val current = statsRepository.stats.value
+            val finalScore = _uiState.value.score
+
+            val newTopScores = (current.topScores + finalScore)
+                .sortedDescending()
+                .take(5)
 
             val updated = current.copy(
                 gamesPlayed = current.gamesPlayed + 1,
                 wins = current.wins + if (endState == GameState.Won) 1 else 0,
-                losses = current.losses + if (endState == GameState.Over) 1 else 0
+                losses = current.losses + if (endState == GameState.Over) 1 else 0,
+                topScores = newTopScores
             )
             statsRepository.save(updated)
         }

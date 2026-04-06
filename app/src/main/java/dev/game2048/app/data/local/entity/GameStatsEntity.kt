@@ -10,5 +10,6 @@ data class GameStatsEntity(
     val gamesPlayed: Int = 0,
     val wins: Int = 0,
     val losses: Int = 0,
-    val topTile: Int = 0
+    val topTile: Int = 0,
+    val topScores: List<Int> = emptyList()
 )

@@ -47,6 +47,9 @@ fun StatsScreen(modifier: Modifier = Modifier, onBack: () -> Unit, viewModel: St
         HighlightRow(bestScore = uiState.bestScore, topTile = uiState.topTile)
         Spacer(modifier = Modifier.height(24.dp))
         DetailCard(uiState)
+
+        Spacer(modifier = Modifier.height(24.dp))
+        TopScoresCard(scores = uiState.topScores)
     }
 }
 
@@ -123,6 +126,27 @@ private fun DetailRow(label: String, value: String) {
     ) {
         Text(text = label, fontSize = 16.sp, color = GameTitle)
         Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = GameTitle)
+    }
+}
+
+@Composable
+private fun TopScoresCard(scores: List<Int>) {
+    if (scores.isEmpty()) return
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(CardColor)
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Text(text = "Top 5 Scores", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = GameTitle)
+        HorizontalDivider(color = GameTitle.copy(alpha = 0.15f))
+
+        scores.forEachIndexed { index, score ->
+            DetailRow(label = "#${index + 1}", value = formatStat(score))
+        }
     }
 }
 

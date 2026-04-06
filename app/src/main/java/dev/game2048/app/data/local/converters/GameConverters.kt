@@ -14,6 +14,12 @@ class GameConverters {
     fun toBoard(json: String): List<List<Tile?>> = Json.decodeFromString(json)
 
     @TypeConverter
+    fun fromIntList(list: List<Int>): String = Json.encodeToString(list)
+
+    @TypeConverter
+    fun toIntList(json: String): List<Int> = Json.decodeFromString(json)
+
+    @TypeConverter
     fun fromGameState(state: GameState): String = when (state) {
         GameState.Playing -> "Playing"
         GameState.Won -> "Won"
