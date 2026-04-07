@@ -1,5 +1,7 @@
 package dev.game2048.app.ui.screens.game
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +15,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -58,6 +59,7 @@ fun GameScreen(
     val settings by viewModel.settings.collectAsState()
 
     val context = LocalContext.current
+    val activity = context as Activity
     val graphicsLayer = rememberGraphicsLayer()
     val coroutineScope = rememberCoroutineScope()
 
@@ -142,6 +144,7 @@ fun GameScreen(
             )
         }
     }
+    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 }
 
 @Composable

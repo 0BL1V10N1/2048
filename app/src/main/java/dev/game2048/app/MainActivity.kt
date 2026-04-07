@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -17,7 +16,6 @@ import dev.game2048.app.data.repository.SettingsRepository
 import dev.game2048.app.domain.model.GameSettings
 import dev.game2048.app.ui.navigation.AppNavHost
 import dev.game2048.app.ui.theme.Game2048Theme
-import dev.game2048.app.ui.theme.Theme
 import dev.game2048.app.utils.MediaPlayer
 import javax.inject.Inject
 
