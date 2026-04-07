@@ -18,6 +18,7 @@ import dev.game2048.app.domain.model.HistoryState
 import dev.game2048.app.utils.GameConstants
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,6 +36,7 @@ class GameViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val statsRepository: StatsRepository
 ) : ViewModel() {
+    private var timerJob: Job? = null
     private var audioPlayer: SoundPool = SoundPool.Builder().setMaxStreams(2).build()
     var mergeFailId: Int = 0
     var mergeSuccessId: Int = 0
@@ -156,7 +158,8 @@ class GameViewModel @Inject constructor(
                 state = GameState.Playing,
                 undosRemaining = GameConstants.MAX_UNDO,
                 isMoving = false,
-                moves = 0
+                moves = 0,
+                gameTime = 0L
             )
         }
     }
@@ -249,6 +252,23 @@ class GameViewModel @Inject constructor(
         if (soundId != 0) {
             audioPlayer.play(soundId, 1f, 1f, 0, 0, 1f)
         }
+    }
+
+    fun startTimer() {
+        if (timerJob?.isActive == true) return
+
+        timerJob = viewModelScope.launch {
+            while (true) {
+                delay(1000L)
+                if (_uiState.value.state == GameState.Playing) {
+                    _uiState.update { it.copy(gameTime = it.gameTime + 1) }
+                }
+            }
+        }
+    }
+
+    fun pauseTimer() {
+        timerJob?.cancel()
     }
 
     override fun onCleared() {

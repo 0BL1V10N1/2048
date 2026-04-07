@@ -13,7 +13,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,14 +30,19 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.game2048.app.domain.model.GameState
 import dev.game2048.app.ui.components.GameGrid
 import dev.game2048.app.ui.components.GameHeader
 import dev.game2048.app.ui.components.GameOverlay
 import dev.game2048.app.ui.theme.GameTitle
 import dev.game2048.app.ui.theme.LocalGameColors
+import dev.game2048.app.utils.formatGameTime
 import dev.game2048.app.utils.shareGameScore
 import kotlinx.coroutines.launch
 
@@ -46,6 +54,7 @@ fun GameScreen(
     onNavigateToSettings: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
     val settings by viewModel.settings.collectAsState()
 
     val context = LocalContext.current
@@ -56,6 +65,20 @@ fun GameScreen(
 
     LaunchedEffect(uiState.state) {
         if (uiState.state == GameState.Playing) showRecap = false
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.startTimer()
+            } else if (event == Lifecycle.Event.ON_PAUSE) {
+                viewModel.pauseTimer()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -86,6 +109,13 @@ fun GameScreen(
                 onMove = viewModel::move,
                 animated = settings.isAnimationEnabled,
                 isAccelerometerEnabled = settings.isAccelerometerEnabled
+            )
+
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = formatGameTime(uiState.gameTime),
+                fontWeight = FontWeight.Bold,
+                color = LocalGameColors.current.settings
             )
         }
 

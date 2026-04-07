@@ -14,7 +14,8 @@ data class GameUiState(
     val state: GameState = GameState.Playing,
     val undosRemaining: Int = GameConstants.MAX_UNDO,
     val isMoving: Boolean = false,
-    var moves: Int = 0
+    var moves: Int = 0,
+    val gameTime: Long = 0L
 ) {
     val currentTopTile: Int
         get() = board.maxOf { row ->
@@ -30,7 +31,8 @@ fun GameStateEntity.toUiState(bestScore: Int): GameUiState = GameUiState(
     state = state,
     undosRemaining = undosRemaining,
     isMoving = false,
-    moves = moves
+    moves = moves,
+    gameTime = gameTime
 )
 
 fun GameUiState.toEntity(history: List<HistoryState>): GameStateEntity = GameStateEntity(
@@ -40,5 +42,6 @@ fun GameUiState.toEntity(history: List<HistoryState>): GameStateEntity = GameSta
     state = state,
     history = history,
     undosRemaining = undosRemaining,
-    moves = moves
+    moves = moves,
+    gameTime = gameTime
 )
