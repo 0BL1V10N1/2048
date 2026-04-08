@@ -38,17 +38,11 @@ fun GameOverlay(
     onContinue: () -> Unit
 ) {
     val isWin = uistate.state == GameState.Won
-    val backgroundAlpha = if (isWin || !showRecap) 0.4f else 0.95f
-    val backgroundColor = if (isWin) {
-        MaterialTheme.colorScheme.primary.copy(alpha = backgroundAlpha)
-    } else {
-        MaterialTheme.colorScheme.background.copy(alpha = backgroundAlpha)
-    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(overlayBackground(isWin, showRecap))
             .padding(vertical = 80.dp)
     ) {
         if (isWin || !showRecap) {
@@ -59,7 +53,7 @@ fun GameOverlay(
         }
 
         if (!isWin && showRecap) {
-            GameRecap(
+            RecapCard(
                 score = uistate.score,
                 bestScore = uistate.bestScore,
                 moves = uistate.moves,
@@ -68,34 +62,26 @@ fun GameOverlay(
             )
         }
 
-        Row(
-            modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            val primaryColor = MaterialTheme.colorScheme.primary
-            val secondaryColor = MaterialTheme.colorScheme.secondary
-            val winValue = uistate.winTarget * 2
+        OverlayActions(
+            isWin = isWin,
+            showRecap = showRecap,
+            winValue = uistate.winTarget * 2,
+            onShareGrid = onShareGrid,
+            onRequestRecap = onRequestRecap,
+            onRestart = onRestart,
+            onContinue = onContinue,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
 
-            when {
-                isWin -> {
-                    OverlayButton(
-                        "Continue for $winValue",
-                        primaryColor,
-                        MaterialTheme.colorScheme.onPrimary,
-                        onContinue
-                    )
-                }
-
-                !showRecap -> {
-                    OverlayButton("Share Board", secondaryColor, MaterialTheme.colorScheme.onSecondary, onShareGrid)
-                    OverlayButton("New Game", primaryColor, MaterialTheme.colorScheme.onPrimary, onRequestRecap)
-                }
-
-                else -> {
-                    OverlayButton("Start Playing", primaryColor, MaterialTheme.colorScheme.onPrimary, onRestart)
-                }
-            }
-        }
+@Composable
+private fun overlayBackground(isWin: Boolean, showRecap: Boolean): Color {
+    val alpha = if (isWin || !showRecap) 0.4f else 0.95f
+    return if (isWin) {
+        MaterialTheme.colorScheme.primary.copy(alpha = alpha)
+    } else {
+        MaterialTheme.colorScheme.background.copy(alpha = alpha)
     }
 }
 
@@ -111,56 +97,118 @@ private fun OverlayTitle(isWin: Boolean, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun OverlayButton(text: String, color: Color, textColor: Color, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        shape = MaterialTheme.shapes.small,
-        colors = ButtonDefaults.buttonColors(containerColor = color),
-        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 32.dp)
-    ) {
-        Text(text = text, color = textColor, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-    }
-}
-
-@Composable
-private fun GameRecap(score: Int, bestScore: Int, moves: Int, topTile: Int, modifier: Modifier = Modifier) {
-    val surfaceColor = MaterialTheme.colorScheme.surface
-    val textColor = MaterialTheme.colorScheme.onSurface
+private fun RecapCard(score: Int, bestScore: Int, moves: Int, topTile: Int, modifier: Modifier = Modifier) {
+    val onSurface = MaterialTheme.colorScheme.onSurface
 
     Column(
         modifier = modifier
             .fillMaxWidth(0.85f)
-            .clip(RoundedCornerShape(12.dp))
-            .background(surfaceColor)
+            .clip(RoundedCornerShape(14.dp))
+            .background(MaterialTheme.colorScheme.surface)
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text(
             text = "Game Results",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = textColor,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = onSurface.copy(alpha = 0.6f),
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        HorizontalDivider(color = textColor.copy(alpha = 0.15f))
+        HorizontalDivider(color = onSurface.copy(alpha = 0.1f))
 
-        RecapRow(label = "All time best score", value = formatStat(bestScore), textColor = textColor)
-        RecapRow(label = "Score", value = formatStat(score), textColor = textColor)
-        RecapRow(label = "Best Tile", value = formatStat(topTile), textColor = textColor)
-        RecapRow(label = "Moves", value = formatStat(moves), textColor = textColor)
+        RecapRow(label = "All time best", value = formatStat(bestScore), highlight = true)
+        RecapRow(label = "Score", value = formatStat(score))
+        RecapRow(label = "Best Tile", value = formatStat(topTile))
+        RecapRow(label = "Moves", value = formatStat(moves))
     }
 }
 
 @Composable
-private fun RecapRow(label: String, value: String, textColor: Color) {
+private fun RecapRow(label: String, value: String, highlight: Boolean = false) {
+    val onSurface = MaterialTheme.colorScheme.onSurface
+    val primary = MaterialTheme.colorScheme.primary
+
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = label, fontSize = 16.sp, color = textColor)
-        Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = textColor)
+        Text(label, fontSize = 15.sp, color = onSurface)
+        Text(
+            value,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = if (highlight) primary else onSurface
+        )
+    }
+}
+
+@Composable
+private fun OverlayActions(
+    isWin: Boolean,
+    showRecap: Boolean,
+    winValue: Int,
+    onShareGrid: () -> Unit,
+    onRequestRecap: () -> Unit,
+    onRestart: () -> Unit,
+    onContinue: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        when {
+            isWin -> {
+                OverlayButton(
+                    text = "Continue for $winValue",
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    onClick = onContinue
+                )
+            }
+
+            !showRecap -> {
+                OverlayButton(
+                    text = "Share Board",
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                    onClick = onShareGrid
+                )
+                OverlayButton(
+                    text = "New Game",
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    onClick = onRequestRecap
+                )
+            }
+
+            else -> {
+                OverlayButton(
+                    text = "Start Playing",
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    onClick = onRestart
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OverlayButton(text: String, containerColor: Color, contentColor: Color, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(14.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 32.dp)
+    ) {
+        Text(text = text, fontSize = 20.sp, fontWeight = FontWeight.Bold)
     }
 }
 
