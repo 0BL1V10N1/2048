@@ -15,13 +15,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import dev.game2048.app.ui.theme.ImageMode
 import dev.game2048.app.ui.theme.LocalGameColors
+import dev.game2048.app.ui.theme.TileImages
 
 @Composable
-fun TileCell(value: Int, modifier: Modifier = Modifier, useImage: Boolean = true) {
+fun TileCell(value: Int, modifier: Modifier = Modifier, isImageEnabled: Boolean = false) {
     val gameColors = LocalGameColors.current
-    val imagesMode = ImageMode()
 
     Box(
         modifier = modifier
@@ -29,9 +28,9 @@ fun TileCell(value: Int, modifier: Modifier = Modifier, useImage: Boolean = true
             .clip(MaterialTheme.shapes.small)
             .background(gameColors.tileColor(value))
             .then(
-                if (useImage && value > 0) {
+                if (isImageEnabled && value > 0) {
                     Modifier.paint(
-                        painterResource(id = imagesMode.image2048(value)),
+                        painterResource(id = TileImages.forValue(value)),
                         contentScale = ContentScale.FillBounds
                     )
                 } else {
@@ -40,7 +39,7 @@ fun TileCell(value: Int, modifier: Modifier = Modifier, useImage: Boolean = true
             ),
         contentAlignment = Alignment.Center
     ) {
-        if (value > 0 && !useImage) {
+        if (value > 0 && !isImageEnabled) {
             val display = formatTileValue(value)
             Text(
                 text = display,

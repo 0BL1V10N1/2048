@@ -96,7 +96,7 @@ fun GameGrid(
                 TileCell(
                     value = tile.value,
                     modifier = Modifier.size(cellSize).offset(x = pos.first, y = pos.second),
-                    useImage = isImageEnabled
+                    isImageEnabled = isImageEnabled
                 )
             }
         }
