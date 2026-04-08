@@ -14,6 +14,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.game2048.app.domain.model.Direction
 
 fun Modifier.onSensorTilt(
@@ -24,10 +27,11 @@ fun Modifier.onSensorTilt(
     if (!enabled) return@composed this
 
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val currentOnMove by rememberUpdatedState(onMoveDetected)
     var lastMoveTime by remember { mutableLongStateOf(0L) }
 
-    DisposableEffect(Unit) {
+    DisposableEffect(lifecycleOwner) {
         val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
             ?: return@DisposableEffect onDispose {}
@@ -60,10 +64,24 @@ fun Modifier.onSensorTilt(
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
         }
 
-        sensorManager.registerListener(listener, accelerometer, SensorManager.SENSOR_DELAY_UI)
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME ->
+                    sensorManager.registerListener(listener, accelerometer, SensorManager.SENSOR_DELAY_UI)
+                Lifecycle.Event.ON_PAUSE ->
+                    sensorManager.unregisterListener(listener)
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            sensorManager.registerListener(listener, accelerometer, SensorManager.SENSOR_DELAY_UI)
+        }
 
         onDispose {
             sensorManager.unregisterListener(listener)
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
