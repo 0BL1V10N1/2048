@@ -25,28 +25,35 @@ private val LightColorScheme = lightColorScheme(
     background = LightBackground,
     onBackground = TextDark,
     surface = LightSurface,
-    onSurface = TextDark
+    onSurface = TextDark,
+    error = Color(0xFFB91C1C),
+    onError = Color.White
 )
 
 private val DarkColorScheme = darkColorScheme(
+    primary = Tile2048,
     onPrimary = Color.Black,
+    secondary = HeaderButtons,
     onSecondary = Color.White,
     background = DarkBackground,
     onBackground = DarkText,
     surface = DarkSurface,
-    onSurface = DarkText
+    onSurface = DarkText,
+    error = Color(0xFFEF4444),
+    onError = Color.White
 )
 
 private val WaterColorScheme = darkColorScheme(
     primary = WaterPrimary,
-    onPrimary = Color.Black,
+    onPrimary = Color.White,
     secondary = WaterSecondary,
-    onSecondary = Color.Black,
+    onSecondary = Color(0xFF042F2E),
     background = WaterBackground,
     onBackground = WaterText,
     surface = WaterSurface,
     onSurface = WaterText,
-    error = WaterError
+    error = WaterError,
+    onError = Color.White
 )
 
 fun getThemeData(theme: Theme) = when (theme) {

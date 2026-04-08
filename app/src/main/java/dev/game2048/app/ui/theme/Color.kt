@@ -21,12 +21,12 @@ val DarkSurface = Color(0xFF1E1E1E)
 val DarkText = Color(0xFFE0E0E0)
 
 // Water theme
-val WaterBackground = Color(0xFF1E293B)
-val WaterSurface = Color(0xFF334155)
-val WaterText = Color(0xFFF1F5F9)
-val WaterPrimary = Color(0xFF7DD3FC)
-val WaterSecondary = Color(0xFF94A3B8)
-val WaterError = Color(0xFFEF4444)
+val WaterBackground = Color(0xFF0F172A)
+val WaterSurface = Color(0xFF1E293B)
+val WaterText = Color(0xFFE2E8F0)
+val WaterPrimary = Color(0xFF0EA5E9)
+val WaterSecondary = Color(0xFF2DD4BF)
+val WaterError = Color(0xFFF87171)
 
 data class GameColors(
     val settings: Color,
@@ -85,12 +85,12 @@ val DarkGameColors = GameColors(
 )
 
 val WaterGameColors = GameColors(
-    gridBackground = Color(0xFF0F172A), tileEmpty = Color(0x33000000), settings = Color(0xFF0EA5E9),
-    tile2 = Color(0xFFBAE6FD), tile4 = Color(0xFF7DD3FC), tile8 = Color(0xFF38BDF8),
-    tile16 = Color(0xFF0EA5E9), tile32 = Color(0xFF0284C7), tile64 = Color(0xFF0369A1),
-    tile128 = Color(0xFF34D399), tile256 = Color(0xFF10B981), tile512 = Color(0xFF059669),
-    tile1024 = Color(0xFF047857), tile2048 = Color(0xFF065F46), tileSuper = Color(0xFF1E293B),
-    textLow = Color(0xFF0F172A), textHigh = Color(0xFFF8FAFC)
+    gridBackground = Color(0xFF0C1222), tileEmpty = Color(0x22CBD5E1), settings = Color(0xFF38BDF8),
+    tile2 = Color(0xFFE0F2FE), tile4 = Color(0xFFBAE6FD), tile8 = Color(0xFF7DD3FC),
+    tile16 = Color(0xFF38BDF8), tile32 = Color(0xFF0EA5E9), tile64 = Color(0xFF0284C7),
+    tile128 = Color(0xFF2DD4BF), tile256 = Color(0xFF14B8A6), tile512 = Color(0xFF0D9488),
+    tile1024 = Color(0xFF0F766E), tile2048 = Color(0xFF115E59), tileSuper = Color(0xFF134E4A),
+    textLow = Color(0xFF0F172A), textHigh = Color(0xFFF0F9FF)
 )
 
 val LocalGameColors = staticCompositionLocalOf<GameColors> {
