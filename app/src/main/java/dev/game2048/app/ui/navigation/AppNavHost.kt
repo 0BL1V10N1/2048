@@ -20,7 +20,6 @@ fun AppNavHost(modifier: Modifier = Modifier) {
     NavHost(navController = navController, startDestination = Route.Game) {
         composable<Route.Game> { backStackEntry ->
             val viewModel: GameViewModel = hiltViewModel(backStackEntry)
-            val statsViewModel: StatsViewModel = hiltViewModel(backStackEntry)
 
             GameScreen(
                 modifier = modifier,

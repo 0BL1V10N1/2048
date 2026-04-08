@@ -110,7 +110,8 @@ fun GameScreen(
                     .padding(top = 16.dp),
                 onMove = viewModel::move,
                 animated = settings.isAnimationEnabled,
-                isAccelerometerEnabled = settings.isAccelerometerEnabled
+                isAccelerometerEnabled = settings.isAccelerometerEnabled,
+                usesImage = settings.usesImage
             )
 
             Text(

@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.SwipeRight
 import androidx.compose.material3.FilterChip
@@ -124,6 +125,13 @@ private fun SettingsContent(
             icon = Icons.Filled.ScreenRotation,
             checked = settings.isAccelerometerEnabled,
             onCheckedChange = { onSettingsChange(settings.copy(isAccelerometerEnabled = it)) }
+        )
+
+        SettingsSwitchRow(
+            label = "Images",
+            icon = Icons.Filled.Image,
+            checked = settings.usesImage,
+            onCheckedChange = { onSettingsChange(settings.copy(usesImage = it)) }
         )
 
         ThemeSection(

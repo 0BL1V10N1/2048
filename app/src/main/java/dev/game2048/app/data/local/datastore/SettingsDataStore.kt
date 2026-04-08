@@ -24,6 +24,8 @@ class SettingsDataStore(private val context: Context) {
         val ANIMATION_ENABLED = booleanPreferencesKey("animation_enabled")
         val SENSOR_ENABLED = booleanPreferencesKey("sensor_enabled")
         val CURRENT_THEME = stringPreferencesKey("theme_pref")
+
+        val IMAGE_MODE = booleanPreferencesKey("image_enabled")
     }
 
     val gridSizeFlow: Flow<Int> = context.settingsDataStore.data.map { prefs ->
@@ -36,7 +38,8 @@ class SettingsDataStore(private val context: Context) {
                 isSoundEnabled = prefs[Keys.SOUND_ENABLED] ?: true,
                 currentTheme = Theme.valueOf(prefs[Keys.CURRENT_THEME] ?: Theme.SYSTEM.name),
                 isAccelerometerEnabled = prefs[Keys.SENSOR_ENABLED] ?: false,
-                isAnimationEnabled = prefs[Keys.ANIMATION_ENABLED] ?: true
+                isAnimationEnabled = prefs[Keys.ANIMATION_ENABLED] ?: true,
+                usesImage = prefs[Keys.IMAGE_MODE] ?: false
             )
         }
 
@@ -46,6 +49,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[Keys.CURRENT_THEME] = settings.currentTheme.toString()
             prefs[Keys.ANIMATION_ENABLED] = settings.isAnimationEnabled
             prefs[Keys.SENSOR_ENABLED] = settings.isAccelerometerEnabled
+            prefs[Keys.IMAGE_MODE] = settings.usesImage
         }
     }
 
