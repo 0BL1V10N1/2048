@@ -24,7 +24,7 @@ class StatsRepository @Inject constructor(private val dao: StatsDao) {
     }
 
     suspend fun resetStats() {
-        dao.clearStats()
         _stats.value = GameStatsEntity()
+        dao.clearStats()
     }
 }

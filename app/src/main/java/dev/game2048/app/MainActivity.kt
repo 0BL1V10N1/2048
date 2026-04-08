@@ -35,7 +35,9 @@ class MainActivity : ComponentActivity() {
         musicPlayer.init(this)
 
         setContent {
-            val settings by settingsRepository.settingsFlow.collectAsState(initial = GameSettings())
+            val settings by settingsRepository.settingsFlow.collectAsState(
+                initial = GameSettings(isMusicEnabled = false)
+            )
             val lifecycleOwner = LocalLifecycleOwner.current
 
             DisposableEffect(lifecycleOwner, settings.isMusicEnabled) {
@@ -46,9 +48,15 @@ class MainActivity : ComponentActivity() {
                                 musicPlayer.play()
                             }
                         }
+
                         Lifecycle.Event.ON_PAUSE -> {
                             musicPlayer.pause()
                         }
+
+                        Lifecycle.Event.ON_DESTROY -> {
+                            musicPlayer.release()
+                        }
+
                         else -> {}
                     }
                 }
@@ -73,10 +81,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        musicPlayer.release()
     }
 }

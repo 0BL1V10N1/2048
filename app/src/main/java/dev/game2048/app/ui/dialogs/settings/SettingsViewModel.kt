@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(private val repository: SettingsRepository) : ViewModel() {
@@ -19,8 +20,8 @@ class SettingsViewModel @Inject constructor(private val repository: SettingsRepo
         .map { it.toUiState() }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            SettingsUiState()
+            SharingStarted.Eagerly,
+            runBlocking { repository.getSettings().toUiState() }
         )
 
     fun applySettings(settings: GameSettings, onComplete: () -> Unit) {

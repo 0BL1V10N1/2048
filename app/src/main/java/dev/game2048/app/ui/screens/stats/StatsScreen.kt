@@ -33,17 +33,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import dev.game2048.app.ui.theme.GameTitle
-import dev.game2048.app.ui.theme.Tile2048
-
-private val BackgroundColor = Color(0xFFFAF8EF)
-private val CardColor = Color(0xFFEDE4DA)
 
 @Composable
 fun StatsScreen(modifier: Modifier = Modifier, onBack: () -> Unit, viewModel: StatsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
+    val colors = MaterialTheme.colorScheme
 
-    Column(modifier = modifier.fillMaxSize().background(BackgroundColor).padding(24.dp)) {
+    Column(modifier = modifier.fillMaxSize().background(colors.background).padding(24.dp)) {
         BackButton(onBack)
         Spacer(modifier = Modifier.height(12.dp))
         StatsTitle()
@@ -63,10 +59,12 @@ fun StatsScreen(modifier: Modifier = Modifier, onBack: () -> Unit, viewModel: St
 
 @Composable
 private fun BackButton(onBack: () -> Unit) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+
     IconButton(
         onClick = onBack,
         modifier = Modifier.size(40.dp),
-        colors = IconButtonDefaults.iconButtonColors(contentColor = GameTitle)
+        colors = IconButtonDefaults.iconButtonColors(contentColor = onBg)
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -82,7 +80,7 @@ private fun StatsTitle() {
         text = "Statistics",
         fontSize = 28.sp,
         fontWeight = FontWeight.Bold,
-        color = GameTitle
+        color = MaterialTheme.colorScheme.onBackground
     )
 }
 
@@ -96,30 +94,36 @@ private fun HighlightRow(bestScore: Int, topTile: Int) {
 
 @Composable
 private fun HighlightCard(label: String, value: String, modifier: Modifier = Modifier) {
+    val primary = MaterialTheme.colorScheme.primary
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Tile2048)
+            .background(primary)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = value, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.White)
-        Text(text = label, fontSize = 13.sp, color = Color.White.copy(alpha = 0.8f))
+        Text(text = value, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = onPrimary)
+        Text(text = label, fontSize = 13.sp, color = onPrimary.copy(alpha = 0.8f))
     }
 }
 
 @Composable
 private fun DetailCard(stats: StatsUiState) {
+    val surface = MaterialTheme.colorScheme.surface
+    val onSurface = MaterialTheme.colorScheme.onSurface
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(CardColor)
+            .background(surface)
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         DetailRow(label = "Games played", value = formatStat(stats.gamesPlayed))
-        HorizontalDivider(color = GameTitle.copy(alpha = 0.15f))
+        HorizontalDivider(color = onSurface.copy(alpha = 0.15f))
         DetailRow(label = "Wins", value = formatStat(stats.wins))
         DetailRow(label = "Losses", value = formatStat(stats.losses))
     }
@@ -127,13 +131,15 @@ private fun DetailCard(stats: StatsUiState) {
 
 @Composable
 private fun DetailRow(label: String, value: String) {
+    val onSurface = MaterialTheme.colorScheme.onSurface
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = label, fontSize = 16.sp, color = GameTitle)
-        Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = GameTitle)
+        Text(text = label, fontSize = 16.sp, color = onSurface)
+        Text(text = value, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = onSurface)
     }
 }
 
@@ -141,16 +147,19 @@ private fun DetailRow(label: String, value: String) {
 private fun TopScoresCard(scores: List<Int>) {
     if (scores.isEmpty()) return
 
+    val surface = MaterialTheme.colorScheme.surface
+    val onSurface = MaterialTheme.colorScheme.onSurface
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(CardColor)
+            .background(surface)
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Text(text = "Top 5 Scores", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = GameTitle)
-        HorizontalDivider(color = GameTitle.copy(alpha = 0.15f))
+        Text(text = "Top 5 Scores", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = onSurface)
+        HorizontalDivider(color = onSurface.copy(alpha = 0.15f))
 
         scores.forEachIndexed { index, score ->
             DetailRow(label = "#${index + 1}", value = formatStat(score))
@@ -160,16 +169,18 @@ private fun TopScoresCard(scores: List<Int>) {
 
 @Composable
 private fun ResetButton(onClick: () -> Unit) {
-    val secondary = MaterialTheme.colorScheme.secondary
-    val textSecondary = MaterialTheme.colorScheme.onSecondary
+    val error = MaterialTheme.colorScheme.error
 
     Button(
         onClick = onClick,
-        shape = MaterialTheme.shapes.small,
-        colors = ButtonDefaults.buttonColors(containerColor = secondary),
-        contentPadding = PaddingValues(vertical = 12.dp, horizontal = 32.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = error,
+            contentColor = Color.White
+        ),
+        contentPadding = PaddingValues(vertical = 14.dp, horizontal = 40.dp)
     ) {
-        Text(text = "Reset Score", color = textSecondary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text(text = "Reset Stats", fontSize = 18.sp, fontWeight = FontWeight.Bold)
     }
 }
 

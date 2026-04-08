@@ -43,10 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import dev.game2048.app.domain.model.GameSettings
-import dev.game2048.app.ui.theme.GameTitle
-import dev.game2048.app.ui.theme.TextLight
 import dev.game2048.app.ui.theme.Theme
-import dev.game2048.app.ui.theme.Tile2048
 import dev.game2048.app.ui.theme.getThemeData
 
 private val GridSizeOptions = listOf(3, 4, 5, 6)
@@ -60,7 +57,7 @@ fun SettingsDialog(viewModel: SettingsViewModel = hiltViewModel(), onDismiss: ()
 
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = Color(0xFFFAF8EF),
+        color = MaterialTheme.colorScheme.background,
         tonalElevation = 6.dp
     ) {
         SettingsContent(
@@ -87,11 +84,13 @@ private fun SettingsContent(
     onDismiss: () -> Unit,
     onApply: () -> Unit
 ) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+
     Column(
         modifier = Modifier.padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Text("Settings", fontWeight = FontWeight.Bold, fontSize = 22.sp, color = GameTitle)
+        Text("Settings", fontWeight = FontWeight.Bold, fontSize = 22.sp, color = onBg)
 
         SettingsSwitchRow(
             label = "Music",
@@ -130,7 +129,7 @@ private fun SettingsContent(
             onThemeChanged = { onSettingsChange(settings.copy(currentTheme = it)) }
         )
 
-        HorizontalDivider(color = GameTitle.copy(alpha = 0.2f))
+        HorizontalDivider(color = onBg.copy(alpha = 0.2f))
 
         GridSizeSection(
             selectedGridSize = settings.gridSize,
@@ -141,7 +140,7 @@ private fun SettingsContent(
             Text(
                 "⚠ Changing the size will restart the game.",
                 fontSize = 12.sp,
-                color = Color(0xFFC73838),
+                color = MaterialTheme.colorScheme.error,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -152,15 +151,17 @@ private fun SettingsContent(
 
 @Composable
 private fun SettingsSwitchRow(label: String, icon: ImageVector, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(imageVector = icon, contentDescription = label, tint = GameTitle)
+            Icon(imageVector = icon, contentDescription = label, tint = onBg)
             Spacer(modifier = Modifier.width(16.dp))
-            Text(label, fontSize = 16.sp, color = GameTitle)
+            Text(label, fontSize = 16.sp, color = onBg)
         }
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
@@ -168,12 +169,14 @@ private fun SettingsSwitchRow(label: String, icon: ImageVector, checked: Boolean
 
 @Composable
 private fun ThemeSection(onThemeChanged: (Theme) -> Unit, currentTheme: Theme) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             "Theme",
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            color = GameTitle,
+            color = onBg,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -201,6 +204,8 @@ private fun ThemeOption(
     onClick: () -> Unit
 ) {
     val alpha = if (isSelected) 1f else 0.4f
+    val onBg = MaterialTheme.colorScheme.onBackground
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.clip(MaterialTheme.shapes.small).clickable(onClick = onClick).padding(8.dp)
@@ -210,7 +215,7 @@ private fun ThemeOption(
         Text(
             text = label,
             fontSize = 12.sp,
-            color = GameTitle.copy(alpha = alpha),
+            color = onBg.copy(alpha = alpha),
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
         )
     }
@@ -252,8 +257,10 @@ private fun ThemeIcon(icons: List<ImageVector>, colors: List<Color>, alpha: Floa
 
 @Composable
 private fun GridSizeSection(selectedGridSize: Int, onSelect: (Int) -> Unit) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = "Grid size", fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = GameTitle)
+        Text(text = "Grid size", fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = onBg)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             GridSizeOptions.forEach { size ->
                 FilterChip(
@@ -261,8 +268,8 @@ private fun GridSizeSection(selectedGridSize: Int, onSelect: (Int) -> Unit) {
                     onClick = { onSelect(size) },
                     label = { Text(text = "$size×$size", fontWeight = FontWeight.Bold, fontSize = 14.sp) },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = Tile2048,
-                        selectedLabelColor = TextLight
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     modifier = Modifier.weight(1f)
                 )
@@ -273,13 +280,16 @@ private fun GridSizeSection(selectedGridSize: Int, onSelect: (Int) -> Unit) {
 
 @Composable
 private fun DialogButtons(hasChanges: Boolean, onDismiss: () -> Unit, onApply: () -> Unit) {
+    val onBg = MaterialTheme.colorScheme.onBackground
+    val primary = MaterialTheme.colorScheme.primary
+
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-        TextButton(onClick = onDismiss) { Text("Cancel", fontWeight = FontWeight.Bold, color = GameTitle) }
+        TextButton(onClick = onDismiss) { Text("Cancel", fontWeight = FontWeight.Bold, color = onBg) }
         TextButton(onClick = onApply, enabled = hasChanges) {
             Text(
                 "Apply",
                 fontWeight = FontWeight.Bold,
-                color = if (hasChanges) Tile2048 else Color.Gray
+                color = if (hasChanges) primary else onBg.copy(alpha = 0.38f)
             )
         }
     }
