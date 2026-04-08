@@ -9,24 +9,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import dev.game2048.app.ui.theme.ImageMode
 import dev.game2048.app.ui.theme.LocalGameColors
 
 @Composable
-fun TileCell(value: Int, modifier: Modifier = Modifier) {
+fun TileCell(value: Int, modifier: Modifier = Modifier, useImage: Boolean = true) {
     val gameColors = LocalGameColors.current
+    val imagesMode = ImageMode()
     Box(
         modifier = modifier
             .aspectRatio(1f)
             .clip(MaterialTheme.shapes.small)
-            .background(gameColors.tileColor(value)),
+            .background(gameColors.tileColor(value))
+            .then(
+                if (useImage && value > 0) {
+                    Modifier.paint(
+                        painterResource(id = imagesMode.Image2048(value)),
+                        contentScale = ContentScale.FillBounds
+                    )
+                } else {
+                    Modifier
+                }
+            ),
         contentAlignment = Alignment.Center
     ) {
-        if (value > 0) {
+        if (value > 0 && !useImage) {
             val display = formatTileValue(value)
-
             Text(
                 text = display,
                 fontSize = tileFontSize(display.length),

@@ -24,6 +24,7 @@ class SettingsDataStore(private val context: Context) {
         val ANIMATION_ENABLED = booleanPreferencesKey("animation_enabled")
         val SENSOR_ENABLED = booleanPreferencesKey("sensor_enabled")
         val CURRENT_THEME = stringPreferencesKey("theme_pref")
+        val IMAGE_MODE = booleanPreferencesKey("image_enabled")
     }
 
     val gameSettingsFlow: Flow<GameSettings> =
@@ -33,6 +34,7 @@ class SettingsDataStore(private val context: Context) {
                 currentTheme = Theme.valueOf(prefs[Keys.CURRENT_THEME] ?: Theme.SYSTEM.name),
                 isAccelerometerEnabled = prefs[Keys.SENSOR_ENABLED] ?: false,
                 isAnimationEnabled = prefs[Keys.ANIMATION_ENABLED] ?: true,
+                usesImage = prefs[Keys.IMAGE_MODE] ?: false,
                 gridSize = prefs[Keys.GRID_SIZE] ?: GameConstants.GRID_SIZE
             )
         }
@@ -43,6 +45,7 @@ class SettingsDataStore(private val context: Context) {
             prefs[Keys.CURRENT_THEME] = settings.currentTheme.toString()
             prefs[Keys.ANIMATION_ENABLED] = settings.isAnimationEnabled
             prefs[Keys.SENSOR_ENABLED] = settings.isAccelerometerEnabled
+            prefs[Keys.IMAGE_MODE] = settings.usesImage
             prefs[Keys.GRID_SIZE] = settings.gridSize
         }
     }
