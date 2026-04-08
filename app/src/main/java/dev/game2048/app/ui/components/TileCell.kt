@@ -22,6 +22,7 @@ import dev.game2048.app.ui.theme.LocalGameColors
 fun TileCell(value: Int, modifier: Modifier = Modifier, useImage: Boolean = true) {
     val gameColors = LocalGameColors.current
     val imagesMode = ImageMode()
+
     Box(
         modifier = modifier
             .aspectRatio(1f)
@@ -30,7 +31,7 @@ fun TileCell(value: Int, modifier: Modifier = Modifier, useImage: Boolean = true
             .then(
                 if (useImage && value > 0) {
                     Modifier.paint(
-                        painterResource(id = imagesMode.Image2048(value)),
+                        painterResource(id = imagesMode.image2048(value)),
                         contentScale = ContentScale.FillBounds
                     )
                 } else {

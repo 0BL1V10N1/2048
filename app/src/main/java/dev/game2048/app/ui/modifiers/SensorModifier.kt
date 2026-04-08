@@ -9,6 +9,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -23,18 +24,20 @@ fun Modifier.onSensorTilt(
     if (!enabled) return@composed this
 
     val context = LocalContext.current
+    val currentOnMove by rememberUpdatedState(onMoveDetected)
     var lastMoveTime by remember { mutableLongStateOf(0L) }
 
     DisposableEffect(Unit) {
         val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+            ?: return@DisposableEffect onDispose {}
 
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent?) {
                 if (event == null) return
 
                 val now = System.currentTimeMillis()
-                if (now - lastMoveTime < 500) return // prevent multiple movements
+                if (now - lastMoveTime < 500) return
 
                 val x = event.values[0]
                 val y = event.values[1]
@@ -48,13 +51,13 @@ fun Modifier.onSensorTilt(
                 }
 
                 direction?.let {
-                    onMoveDetected(it)
+                    currentOnMove(it)
                     lastMoveTime = now
                 }
             }
 
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-            }
+            @Suppress("EmptyFunctionBlock")
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
         }
 
         sensorManager.registerListener(listener, accelerometer, SensorManager.SENSOR_DELAY_UI)

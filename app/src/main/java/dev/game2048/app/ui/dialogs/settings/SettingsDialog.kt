@@ -95,13 +95,13 @@ private fun SettingsContent(
 
         SettingsSwitchRow(
             label = "Music",
-            icon = if (settings.isSoundEnabled) {
+            icon = if (settings.isMusicEnabled) {
                 Icons.AutoMirrored.Filled.VolumeUp
             } else {
                 Icons.AutoMirrored.Filled.VolumeOff
             },
-            checked = settings.isSoundEnabled,
-            onCheckedChange = { onSettingsChange(settings.copy(isSoundEnabled = it)) }
+            checked = settings.isMusicEnabled,
+            onCheckedChange = { onSettingsChange(settings.copy(isMusicEnabled = it)) }
         )
 
         SettingsSwitchRow(
@@ -121,8 +121,8 @@ private fun SettingsContent(
         SettingsSwitchRow(
             label = "Images",
             icon = Icons.Filled.Image,
-            checked = settings.usesImage,
-            onCheckedChange = { onSettingsChange(settings.copy(usesImage = it)) }
+            checked = settings.isImageEnabled,
+            onCheckedChange = { onSettingsChange(settings.copy(isImageEnabled = it)) }
         )
 
         ThemeSection(

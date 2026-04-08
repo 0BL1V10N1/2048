@@ -3,6 +3,8 @@ package dev.game2048.app.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -24,14 +26,14 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             GameScreen(
                 modifier = modifier,
                 viewModel = viewModel,
-                onNavigateToStats = { navController.navigate(Route.Stats) },
-                onNavigateToSettings = { navController.navigate(Route.Settings) }
+                onNavigateToStats = { navController.navigateSafe(Route.Stats) },
+                onNavigateToSettings = { navController.navigateSafe(Route.Settings) }
             )
         }
         dialog<Route.Settings> {
             SettingsDialog(
-                onDismiss = { navController.popBackStack() },
-                onApply = { navController.popBackStack() }
+                onDismiss = { navController.popBackSafe() },
+                onApply = { navController.popBackSafe() }
             )
         }
         composable<Route.Stats> { backStackEntry ->
@@ -40,9 +42,20 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             StatsScreen(
                 modifier = modifier,
                 viewModel = statsViewModel,
-                onBack = { navController.popBackStack() },
-                onReset = { statsViewModel.resetStats() }
+                onBack = { navController.popBackSafe() }
             )
         }
+    }
+}
+
+private fun NavController.navigateSafe(route: Route) {
+    if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+        navigate(route) { launchSingleTop = true }
+    }
+}
+
+private fun NavController.popBackSafe() {
+    if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+        popBackStack()
     }
 }

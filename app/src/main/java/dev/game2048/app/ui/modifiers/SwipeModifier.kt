@@ -1,37 +1,47 @@
 package dev.game2048.app.ui.modifiers
 
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.input.pointer.pointerInput
 import dev.game2048.app.domain.model.Direction
 import kotlin.math.abs
 
-fun Modifier.onSwipe(threshold: Float = 100f, onSwipeDetected: (Direction) -> Unit): Modifier =
-    this.pointerInput(Unit) {
-        var totalDragX = 0f
-        var totalDragY = 0f
+fun Modifier.onSwipe(enabled: Boolean = true, threshold: Float = 100f, onSwipeDetected: (Direction) -> Unit): Modifier =
+    composed {
+        val currentEnabled by rememberUpdatedState(enabled)
+        val currentOnSwipe by rememberUpdatedState(onSwipeDetected)
 
-        detectDragGestures(
-            onDragStart = {
-                totalDragX = 0f
-                totalDragY = 0f
-            },
-            onDrag = { change, dragAmount ->
-                change.consume()
-                totalDragX += dragAmount.x
-                totalDragY += dragAmount.y
-            },
-            onDragEnd = {
-                val absX = abs(totalDragX)
-                val absY = abs(totalDragY)
+        Modifier.pointerInput(Unit) {
+            var totalDragX = 0f
+            var totalDragY = 0f
 
-                if (maxOf(absX, absY) > threshold) {
-                    if (absX > absY) {
-                        onSwipeDetected(if (totalDragX > 0) Direction.RIGHT else Direction.LEFT)
-                    } else {
-                        onSwipeDetected(if (totalDragY > 0) Direction.DOWN else Direction.UP)
+            detectDragGestures(
+                onDragStart = {
+                    totalDragX = 0f
+                    totalDragY = 0f
+                },
+                onDrag = { change, dragAmount ->
+                    change.consume()
+                    totalDragX += dragAmount.x
+                    totalDragY += dragAmount.y
+                },
+                onDragEnd = {
+                    if (!currentEnabled) return@detectDragGestures
+
+                    val absX = abs(totalDragX)
+                    val absY = abs(totalDragY)
+
+                    if (maxOf(absX, absY) > threshold) {
+                        if (absX > absY) {
+                            currentOnSwipe(if (totalDragX > 0) Direction.RIGHT else Direction.LEFT)
+                        } else {
+                            currentOnSwipe(if (totalDragY > 0) Direction.DOWN else Direction.UP)
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }

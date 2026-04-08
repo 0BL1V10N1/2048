@@ -109,7 +109,7 @@ fun GameScreen(
                 onMove = viewModel::move,
                 animated = settings.isAnimationEnabled,
                 isAccelerometerEnabled = settings.isAccelerometerEnabled,
-                usesImage = settings.usesImage
+                isImageEnabled = settings.isImageEnabled
             )
 
             Text(

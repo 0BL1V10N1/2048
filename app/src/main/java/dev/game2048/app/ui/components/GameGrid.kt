@@ -1,6 +1,5 @@
 package dev.game2048.app.ui.components
 
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -38,7 +37,7 @@ fun GameGrid(
     onMove: (Direction) -> Unit,
     animated: Boolean,
     isAccelerometerEnabled: Boolean,
-    usesImage: Boolean
+    isImageEnabled: Boolean
 ) {
     val gameColors = LocalGameColors.current
 
@@ -47,7 +46,7 @@ fun GameGrid(
             .aspectRatio(1f)
             .clip(RoundedCornerShape(12.dp))
             .background(gameColors.gridBackground)
-            .onSwipe { direction -> if (!isAccelerometerEnabled) onMove(direction) }
+            .onSwipe(enabled = !isAccelerometerEnabled) { direction -> onMove(direction) }
             .onSensorTilt(enabled = isAccelerometerEnabled) { direction -> onMove(direction) }
             .padding(8.dp)
     ) {
@@ -97,7 +96,7 @@ fun GameGrid(
                 TileCell(
                     value = tile.value,
                     modifier = Modifier.size(cellSize).offset(x = pos.first, y = pos.second),
-                    useImage = usesImage
+                    useImage = isImageEnabled
                 )
             }
         }
@@ -123,7 +122,7 @@ private fun GameGridPreview() {
             onMove = {},
             animated = false,
             isAccelerometerEnabled = false,
-            usesImage = false
+            isImageEnabled = false
         )
     }
 }

@@ -40,12 +40,7 @@ private val BackgroundColor = Color(0xFFFAF8EF)
 private val CardColor = Color(0xFFEDE4DA)
 
 @Composable
-fun StatsScreen(
-    modifier: Modifier = Modifier,
-    onBack: () -> Unit,
-    viewModel: StatsViewModel = hiltViewModel(),
-    onReset: () -> Unit
-) {
+fun StatsScreen(modifier: Modifier = Modifier, onBack: () -> Unit, viewModel: StatsViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = modifier.fillMaxSize().background(BackgroundColor).padding(24.dp)) {
@@ -61,7 +56,7 @@ fun StatsScreen(
         TopScoresCard(scores = uiState.topScores)
 
         Row(modifier = Modifier.fillMaxSize().padding(12.dp), horizontalArrangement = Arrangement.Center) {
-            ResetButton(onReset)
+            ResetButton(onClick = viewModel::resetStats)
         }
     }
 }

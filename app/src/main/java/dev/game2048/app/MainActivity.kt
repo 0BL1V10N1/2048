@@ -7,21 +7,24 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import dagger.hilt.android.AndroidEntryPoint
 import dev.game2048.app.data.repository.SettingsRepository
 import dev.game2048.app.domain.model.GameSettings
 import dev.game2048.app.ui.navigation.AppNavHost
 import dev.game2048.app.ui.theme.Game2048Theme
-import dev.game2048.app.utils.MediaPlayer
+import dev.game2048.app.utils.MusicPlayer
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val mediaPlayer = MediaPlayer()
+    private val musicPlayer = MusicPlayer()
 
     @Inject
     lateinit var settingsRepository: SettingsRepository
@@ -29,16 +32,38 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        mediaPlayer.initMediaPlayer(this)
+        musicPlayer.init(this)
 
         setContent {
             val settings by settingsRepository.settingsFlow.collectAsState(initial = GameSettings())
+            val lifecycleOwner = LocalLifecycleOwner.current
 
-            LaunchedEffect(settings.isSoundEnabled) {
-                if (settings.isSoundEnabled) {
-                    mediaPlayer.startMediaPlayer()
-                } else {
-                    mediaPlayer.pauseMediaPlayer()
+            DisposableEffect(lifecycleOwner, settings.isMusicEnabled) {
+                val observer = LifecycleEventObserver { _, event ->
+                    when (event) {
+                        Lifecycle.Event.ON_RESUME -> {
+                            if (settings.isMusicEnabled) {
+                                musicPlayer.play()
+                            }
+                        }
+                        Lifecycle.Event.ON_PAUSE -> {
+                            musicPlayer.pause()
+                        }
+                        else -> {}
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+
+                if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                    if (settings.isMusicEnabled) {
+                        musicPlayer.play()
+                    } else {
+                        musicPlayer.pause()
+                    }
+                }
+
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
                 }
             }
 
@@ -50,13 +75,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        mediaPlayer.pauseMediaPlayer()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.destroyMediaPlayer()
+        musicPlayer.release()
     }
 }

@@ -20,7 +20,7 @@ class SettingsDataStore(private val context: Context) {
 
     private object Keys {
         val GRID_SIZE = intPreferencesKey("grid_size")
-        val SOUND_ENABLED = booleanPreferencesKey("sound_enabled")
+        val MUSIC_ENABLED = booleanPreferencesKey("music_enabled")
         val ANIMATION_ENABLED = booleanPreferencesKey("animation_enabled")
         val SENSOR_ENABLED = booleanPreferencesKey("sensor_enabled")
         val CURRENT_THEME = stringPreferencesKey("theme_pref")
@@ -30,22 +30,22 @@ class SettingsDataStore(private val context: Context) {
     val gameSettingsFlow: Flow<GameSettings> =
         context.settingsDataStore.data.map { prefs ->
             GameSettings(
-                isSoundEnabled = prefs[Keys.SOUND_ENABLED] ?: true,
+                isMusicEnabled = prefs[Keys.MUSIC_ENABLED] ?: true,
                 currentTheme = Theme.valueOf(prefs[Keys.CURRENT_THEME] ?: Theme.SYSTEM.name),
                 isAccelerometerEnabled = prefs[Keys.SENSOR_ENABLED] ?: false,
                 isAnimationEnabled = prefs[Keys.ANIMATION_ENABLED] ?: true,
-                usesImage = prefs[Keys.IMAGE_MODE] ?: false,
+                isImageEnabled = prefs[Keys.IMAGE_MODE] ?: false,
                 gridSize = prefs[Keys.GRID_SIZE] ?: GameConstants.GRID_SIZE
             )
         }
 
     suspend fun saveSettings(settings: GameSettings) {
         context.settingsDataStore.edit { prefs ->
-            prefs[Keys.SOUND_ENABLED] = settings.isSoundEnabled
+            prefs[Keys.MUSIC_ENABLED] = settings.isMusicEnabled
             prefs[Keys.CURRENT_THEME] = settings.currentTheme.toString()
             prefs[Keys.ANIMATION_ENABLED] = settings.isAnimationEnabled
             prefs[Keys.SENSOR_ENABLED] = settings.isAccelerometerEnabled
-            prefs[Keys.IMAGE_MODE] = settings.usesImage
+            prefs[Keys.IMAGE_MODE] = settings.isImageEnabled
             prefs[Keys.GRID_SIZE] = settings.gridSize
         }
     }

@@ -16,7 +16,7 @@ data class ImageMode(
     val tile2048: Int = R.drawable.compose,
     val tileSuper: Int = R.drawable.travail
 ) {
-    fun Image2048(value: Int): Int = when (value) {
+    fun image2048(value: Int): Int = when (value) {
         2 -> tile2
         4 -> tile4
         8 -> tile8
