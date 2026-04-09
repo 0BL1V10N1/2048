@@ -37,11 +37,8 @@ fun AppNavHost(modifier: Modifier = Modifier) {
             )
         }
         composable<Route.Stats> { backStackEntry ->
-            val statsViewModel: StatsViewModel = hiltViewModel(backStackEntry)
-
             StatsScreen(
                 modifier = modifier,
-                viewModel = statsViewModel,
                 onBack = { navController.popBackSafe() }
             )
         }
