@@ -27,7 +27,7 @@
 - ## 📦 Prerequisites
     - 📱 **[Android Studio](https://developer.android.com/studio)**
     - ☕ **[JDK 17](https://adoptium.net/temurin/releases/)**
-    - 🤖 **[Android SDK 26–36](https://developer.android.com/about/versions)**
+    - 🤖 **[Android SDK 36](https://developer.android.com/about/versions)**
 
 - ## ⚙️ Installation
     - First **clone** the project
