@@ -9,14 +9,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/2048-LRU/2048/releases"><img src="https://img.shields.io/github/v/release/2048-LRU/2048?style=for-the-badge&color=EDC22E&label=latest" alt="Release" /></a>
-  <a href="https://github.com/2048-LRU/2048/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/2048-LRU/2048/ci.yml?style=for-the-badge&label=CI" alt="CI" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/2048-LRU/2048.svg?style=for-the-badge&color=blue" alt="License" /></a>
+  <a href="https://github.com/0BL1V10N1/2048/releases"><img src="https://img.shields.io/github/v/release/0BL1V10N1/2048?style=for-the-badge&color=EDC22E&label=latest" alt="Release" /></a>
+  <a href="https://github.com/0BL1V10N1/2048/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/0BL1V10N1/2048/ci.yml?style=for-the-badge&label=CI" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/0BL1V10N1/2048.svg?style=for-the-badge&color=blue" alt="License" /></a>
   <img src="https://img.shields.io/badge/SDK-26%E2%80%9336-34A853?style=for-the-badge&logo=android&logoColor=white" alt="SDK" />
   <img src="https://img.shields.io/badge/Kotlin-2.3-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin" />
 </p>
 
-# 🏗️ Build with
+# 🏗️ Built with
 
 - [![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 - [![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)](https://developer.android.com/compose)
@@ -33,7 +33,7 @@
     - First **clone** the project
 
         ```bash
-        git clone https://github.com/2048-LRU/2048.git
+        git clone https://github.com/0BL1V10N1/2048.git
         cd 2048
         ```
 
@@ -83,6 +83,6 @@
 
 # 👥 Contributors
 
-<a href="https://github.com/2048-LRU/2048/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=2048-LRU/2048" alt="contrib.rocks image" />
+<a href="https://github.com/0BL1V10N1/2048/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=0BL1V10N1/2048" alt="contrib.rocks image" />
 </a>
